@@ -8,7 +8,7 @@ using VendSys.Infrastructure.Data;
 namespace VendSys.Infrastructure.Repositories;
 
 /// <summary>Persists DEX data by executing stored procedures via EF Core.</summary>
-public sealed class DexRepository : IDexRepository
+public class DexRepository : IDexRepository
 {
     private readonly VenDexDbContext _context;
 
@@ -23,7 +23,7 @@ public sealed class DexRepository : IDexRepository
         var vendsParam = new SqlParameter("@ValueOfPaidVends", SqlDbType.Decimal) { Value = dto.ValueOfPaidVends, Precision = 10, Scale = 2 };
         var idOutParam = new SqlParameter("@DexMeterId", SqlDbType.Int) { Direction = ParameterDirection.Output };
 
-        await _context.Database.ExecuteSqlRawAsync(
+        await ExecuteAsync(
             "EXEC [dbo].[SaveDEXMeter] @Machine, @DEXDateTime, @MachineSerialNumber, @ValueOfPaidVends, @DexMeterId OUTPUT",
             machineParam, dexDateTimeParam, serialParam, vendsParam, idOutParam);
 
@@ -39,8 +39,12 @@ public sealed class DexRepository : IDexRepository
         var vendsParam = new SqlParameter("@NumberOfVends", SqlDbType.Int) { Value = dto.NumberOfVends };
         var salesParam = new SqlParameter("@ValueOfPaidSales", SqlDbType.Decimal) { Value = dto.ValueOfPaidSales, Precision = 10, Scale = 2 };
 
-        await _context.Database.ExecuteSqlRawAsync(
+        await ExecuteAsync(
             "EXEC [dbo].[SaveDEXLaneMeter] @DexMeterId, @ProductIdentifier, @Price, @NumberOfVends, @ValueOfPaidSales",
             meterIdParam, productParam, priceParam, vendsParam, salesParam);
     }
+
+    /// <summary>Executes a raw SQL command against the database. Virtual to allow interception in tests.</summary>
+    protected virtual Task ExecuteAsync(string sql, params SqlParameter[] parameters) =>
+        _context.Database.ExecuteSqlRawAsync(sql, (object[])parameters);
 }
