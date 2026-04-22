@@ -1,0 +1,33 @@
+# VenDex API — Docker Compose
+#
+# Prerequisites:
+#   - SQL Server LocalDB or a full SQL Server instance accessible from the host
+#   - Docker Desktop installed and running
+#
+# Usage:
+#   docker-compose up --build
+#
+# Connection string note:
+#   LocalDB (Windows Authentication) is not reachable from a Linux container.
+#   Replace the connection string below with a full SQL Server instance that
+#   accepts TCP connections, using a SQL login (User Id / Password).
+#   host.docker.internal resolves to the host machine from inside the container.
+#
+# Example with a local SQL Server instance using SQL auth:
+#   Server=host.docker.internal,1433;Database=VenDex;User Id=sa;Password=<YourPassword>;
+
+services:
+  vendex-api:
+    build:
+      context: .
+      dockerfile: src/Backend/VendSys.Api/Dockerfile
+    image: vendex-api
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Server=host.docker.internal,1433;Database=VenDex;User Id=sa;Password=<YourPassword>;MultipleActiveResultSets=False;TrustServerCertificate=True;"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
