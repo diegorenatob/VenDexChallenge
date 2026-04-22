@@ -2,8 +2,8 @@ using System.Net;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
-using VendSys.Maui;
-using VendSys.Maui.Services;
+using VendSys.Maui.Infrastructure;
+using VendSys.Maui.Infrastructure.Services;
 
 namespace VendSys.Maui.Tests.Services;
 

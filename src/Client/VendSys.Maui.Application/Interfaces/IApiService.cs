@@ -1,6 +1,6 @@
-using VendSys.Maui.Models;
+using VendSys.Client.Application.Models;
 
-namespace VendSys.Maui.Services;
+namespace VendSys.Client.Application.Interfaces;
 
 public interface IApiService
 {

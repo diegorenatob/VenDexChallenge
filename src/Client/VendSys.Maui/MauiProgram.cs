@@ -1,8 +1,9 @@
 using CommunityToolkit.Maui;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polly;
-using VendSys.Maui.Services;
+using VendSys.Client.Application.Interfaces;
+using VendSys.Maui.Infrastructure;
+using VendSys.Maui.Infrastructure.Services;
 using VendSys.Maui.ViewModels;
 
 namespace VendSys.Maui;
@@ -12,6 +13,7 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
+
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
@@ -21,20 +23,13 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        builder.Services.AddSingleton<IDexFileService, DexFileService>();
-        builder.Services.AddSingleton<IApiService, ApiService>();
-        builder.Services.AddSingleton<MainViewModel>();
-        builder.Services.AddSingleton<MainPage>();
-
         builder.Services
-            .AddHttpClient(ApiConstants.HttpClientName, client =>
-            {
-                client.BaseAddress = new Uri(ApiConstants.BaseUrl);
-            })
-            .AddTransientHttpErrorPolicy(policy =>
-                policy.WaitAndRetryAsync(
-                    3,
-                    attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt))));
+            .AddSingleton<IDexFileService>(_ => new DexFileService(typeof(MauiProgram).Assembly))
+            .AddSingleton<IApiService, ApiService>()
+            .AddSingleton<MainViewModel>()
+            .AddSingleton<MainPage>()
+            .AddHttpClient(ApiConstants.HttpClientName, c => c.BaseAddress = new Uri(ApiConstants.BaseUrl))
+            .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt))));
 
 #if DEBUG
         builder.Logging.AddDebug();

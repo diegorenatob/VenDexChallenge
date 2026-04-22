@@ -1,16 +1,20 @@
 using System.Reflection;
+using VendSys.Client.Application.Constants;
+using VendSys.Client.Application.Interfaces;
 
-namespace VendSys.Maui.Services;
+namespace VendSys.Maui.Infrastructure.Services;
 
 public sealed class DexFileService : IDexFileService
 {
-    private static readonly Assembly _assembly = Assembly.GetExecutingAssembly();
-
     private static readonly Dictionary<string, string> _resourceKeys = new()
     {
-        [ApiConstants.MachineA] = "VendSys.Maui.Resources.Dex.MachineA.txt",
-        [ApiConstants.MachineB] = "VendSys.Maui.Resources.Dex.MachineB.txt",
+        [Machines.A] = "VendSys.Maui.Resources.Dex.MachineA.txt",
+        [Machines.B] = "VendSys.Maui.Resources.Dex.MachineB.txt",
     };
+
+    private readonly Assembly _assembly;
+
+    public DexFileService(Assembly assembly) => _assembly = assembly;
 
     public string LoadDexFile(string machine)
     {

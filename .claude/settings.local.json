@@ -23,7 +23,8 @@
       "Bash(dotnet add *)",
       "Bash(dotnet build *)",
       "Bash(dotnet ef *)",
-      "Bash(dotnet test *)"
+      "Bash(dotnet test *)",
+      "Bash(powershell -Command \"[System.Guid]::NewGuid\\(\\).ToString\\('B'\\).ToUpper\\(\\); [System.Guid]::NewGuid\\(\\).ToString\\('B'\\).ToUpper\\(\\)\")"
     ]
   }
 }

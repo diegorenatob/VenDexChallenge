@@ -1,4 +1,4 @@
-namespace VendSys.Maui.Models;
+namespace VendSys.Client.Application.Models;
 
 public sealed record ApiResult(bool IsSuccess, string? ErrorMessage)
 {

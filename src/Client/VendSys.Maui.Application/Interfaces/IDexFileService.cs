@@ -1,4 +1,4 @@
-namespace VendSys.Maui.Services;
+namespace VendSys.Client.Application.Interfaces;
 
 public interface IDexFileService
 {

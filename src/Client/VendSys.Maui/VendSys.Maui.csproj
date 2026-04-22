@@ -72,4 +72,9 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.9" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\VendSys.Maui.Application\VendSys.Maui.Application.csproj" />
+		<ProjectReference Include="..\VendSys.Maui.Infrastructure\VendSys.Maui.Infrastructure.csproj" />
+	</ItemGroup>
+
 </Project>

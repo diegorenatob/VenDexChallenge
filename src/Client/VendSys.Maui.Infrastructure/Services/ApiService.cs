@@ -1,8 +1,9 @@
 using System.Net.Http.Headers;
 using System.Text;
-using VendSys.Maui.Models;
+using VendSys.Client.Application.Interfaces;
+using VendSys.Client.Application.Models;
 
-namespace VendSys.Maui.Services;
+namespace VendSys.Maui.Infrastructure.Services;
 
 public sealed class ApiService : IApiService
 {
