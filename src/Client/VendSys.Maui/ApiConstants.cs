@@ -1,6 +1,6 @@
 namespace VendSys.Maui;
 
-internal static class ApiConstants
+public static class ApiConstants
 {
     public const string HttpClientName = "VenDexClient";
     public const string BaseUrl = "http://localhost:5000";
