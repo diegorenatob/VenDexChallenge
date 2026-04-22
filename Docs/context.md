@@ -185,3 +185,53 @@ When parsing the DEX text in C#:
 - **PA5 date** (last sale date per lane) is not stored in the database per the requirements; only ProductIdentifier, Price, NumberOfVends, and ValueOfPaidSales are stored.
 - **Repeated imports** of the same DEX file: behavior on duplicate (Machine, DEXDateTime) should either upsert or reject with a meaningful error. To be decided at implementation time.
 - The PDF mentioned in the challenge document is the NAMA DEX specification; it was not provided as a separate file — the two sample .txt files and the .docx suffice for this implementation.
+
+---
+
+## 7. Coding Conventions
+
+These rules apply to **every C# file** in the project without exception.
+
+### Naming
+- **PascalCase** for classes, interfaces, methods, and properties
+- **camelCase** for local variables and private fields; prefix private fields with `_` (e.g. `_repository`, `_logger`)
+- **Interfaces** are prefixed with `I` (e.g. `IDexParser`, `IDexRepository`)
+- **No magic strings** — use named constants or values from configuration/`appsettings.json`
+
+### Comments
+- **XML doc comments (`///`)** on all public classes and methods
+- **Inline comments** only for non-obvious logic (the *why*, not the *what*)
+- No commented-out code left in committed files
+
+### General
+- No unused `using` statements
+- All async methods must use the **`Async` suffix** (e.g. `SaveDexMeterAsync`)
+- Use **`var`** only when the type is unambiguous from the right-hand side
+- All project files must use **file-scoped namespaces** (`namespace Foo.Bar;` not `namespace Foo.Bar { }`)
+
+### Example skeleton
+
+```csharp
+namespace VenDex.Api.Parsing;
+
+/// <summary>
+/// Parses raw DEX file text into structured data models.
+/// </summary>
+public sealed class DexParser : IDexParser
+{
+    private readonly ILogger<DexParser> _logger;
+
+    public DexParser(ILogger<DexParser> logger)
+    {
+        _logger = logger;
+    }
+
+    /// <summary>
+    /// Parses a DEX file string and returns a <see cref="DexDocument"/>.
+    /// </summary>
+    public DexDocument Parse(string dexText)
+    {
+        // ...
+    }
+}
+```
