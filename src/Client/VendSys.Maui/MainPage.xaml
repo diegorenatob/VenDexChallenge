@@ -1,14 +1,46 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:VendSys.Maui.ViewModels"
              x:Class="VendSys.Maui.MainPage"
+             x:DataType="viewmodels:MainViewModel"
              Title="VenDex">
 
-    <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
-        <Label
-            Text="VenDex"
-            HorizontalOptions="Center"
-            FontSize="32" />
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="24" VerticalOptions="Center">
+
+            <Label Text="VenDex"
+                   Style="{StaticResource Headline}"
+                   SemanticProperties.Description="VenDex application heading" />
+
+            <Label Text="Send vending machine DEX data to the server"
+                   Style="{StaticResource SubHeadline}"
+                   SemanticProperties.Description="Application subtitle" />
+
+            <Button Text="Send Machine A"
+                    Command="{Binding SendDexACommand}"
+                    HorizontalOptions="Fill"
+                    SemanticProperties.Description="Send Machine A"
+                    SemanticProperties.Hint="Sends DEX data for Machine A to the server" />
+
+            <Button Text="Send Machine B"
+                    Command="{Binding SendDexBCommand}"
+                    HorizontalOptions="Fill"
+                    SemanticProperties.Description="Send Machine B"
+                    SemanticProperties.Hint="Sends DEX data for Machine B to the server" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               HorizontalOptions="Center"
+                               SemanticProperties.Description="Loading indicator" />
+
+            <Label Text="{Binding StatusMessage}"
+                   Style="{StaticResource StatusLabelStyle}"
+                   TextColor="{Binding IsError, Converter={StaticResource BoolToColorConverter}}"
+                   IsVisible="{Binding StatusMessage, Converter={StaticResource StringToBoolConverter}}"
+                   SemanticProperties.Description="Status message" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>
