@@ -1,14 +1,8 @@
-namespace VendSys.Domain;
+namespace VendSys.Application.DTOs;
 
-/// <summary>Represents one vending lane reading from a DEX file.</summary>
-public sealed class DexLaneMeter
+/// <summary>Transfer object carrying parsed DEX lane data before persistence.</summary>
+public sealed class DexLaneMeterDto
 {
-    /// <summary>Auto-generated primary key.</summary>
-    public int DexLaneMeterId { get; set; }
-
-    /// <summary>Foreign key to the parent <see cref="DexMeter"/> row.</summary>
-    public int DexMeterId { get; set; }
-
     /// <summary>Lane product identifier from the PA1 segment.</summary>
     public string ProductIdentifier { get; set; } = string.Empty;
 
