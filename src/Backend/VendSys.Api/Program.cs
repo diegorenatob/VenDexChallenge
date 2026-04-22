@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using VendSys.Api.Auth;
 using VendSys.Api.Endpoints;
+using VendSys.Api.Middleware;
 using VendSys.Application.Interfaces;
 using VendSys.Application.UseCases;
 using VendSys.Infrastructure.Data;
@@ -26,8 +27,12 @@ builder.Services.AddAuthorization();
 builder.Services.Configure<BasicAuthOptions>(
     builder.Configuration.GetSection("BasicAuth"));
 
+builder.Services.AddTransient<GlobalExceptionMiddleware>();
+
 var app = builder.Build();
 
+// Pipeline order: (Serilog — Feature 10) → GlobalException → Auth → Endpoint
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
