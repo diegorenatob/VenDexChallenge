@@ -12,7 +12,17 @@
       "PowerShell(Get-Command node -ErrorAction SilentlyContinue)",
       "PowerShell(Get-Command dotnet -ErrorAction SilentlyContinue)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(dotnet new *)",
+      "Bash(dotnet workload *)",
+      "Bash(dotnet --version)",
+      "Bash(dotnet sln *)",
+      "Bash(rm VendSys.slnx)",
+      "Bash(ls *.sln)",
+      "Bash(ls *.slnx)",
+      "Bash(dotnet add *)",
+      "Bash(dotnet build *)",
+      "Bash(dotnet ef *)"
     ]
   }
 }
