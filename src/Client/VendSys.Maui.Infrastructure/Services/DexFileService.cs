@@ -6,21 +6,27 @@ namespace VendSys.Maui.Infrastructure.Services;
 
 public sealed class DexFileService : IDexFileService
 {
-    private static readonly Dictionary<string, string> _resourceKeys = new()
-    {
-        [Machines.A] = "VendSys.Maui.Resources.Dex.MachineA.txt",
-        [Machines.B] = "VendSys.Maui.Resources.Dex.MachineB.txt",
-    };
-
     private readonly Assembly _assembly;
+    private readonly string _prefix;
 
-    public DexFileService(Assembly assembly) => _assembly = assembly;
+    public DexFileService(Assembly assembly)
+    {
+        _assembly = assembly;
+        _prefix = assembly.GetName().Name + ".Resources.Dex.";
+    }
+
+    private static readonly IReadOnlyDictionary<string, string> _fileNames = new Dictionary<string, string>
+    {
+        [Machines.A] = "MachineA.txt",
+        [Machines.B] = "MachineB.txt",
+    };
 
     public string LoadDexFile(string machine)
     {
-        if (!_resourceKeys.TryGetValue(machine, out var resourceKey))
+        if (!_fileNames.TryGetValue(machine, out var fileName))
             throw new InvalidOperationException($"No DEX resource registered for machine '{machine}'.");
 
+        var resourceKey = _prefix + fileName;
         using var stream = _assembly.GetManifestResourceStream(resourceKey)
             ?? throw new InvalidOperationException($"Embedded resource '{resourceKey}' not found in assembly.");
 

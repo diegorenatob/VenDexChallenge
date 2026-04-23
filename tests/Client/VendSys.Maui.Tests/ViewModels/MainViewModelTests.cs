@@ -1,5 +1,4 @@
-using CommunityToolkit.Mvvm.Input;
-using Moq;
+using NSubstitute;
 using VendSys.Client.Application.Interfaces;
 using VendSys.Client.Application.Models;
 using VendSys.Maui.ViewModels;
@@ -9,22 +8,21 @@ namespace VendSys.Maui.Tests.ViewModels;
 [TestFixture]
 public class MainViewModelTests
 {
-    private Mock<IApiService> _apiMock = null!;
-    private Mock<IDexFileService> _dexMock = null!;
+    private IApiService _apiSub = null!;
+    private IDexFileService _dexSub = null!;
     private MainViewModel _sut = null!;
 
     [SetUp]
     public void SetUp()
     {
-        _apiMock = new Mock<IApiService>();
-        _dexMock = new Mock<IDexFileService>();
-        _dexMock.Setup(d => d.LoadDexFile(It.IsAny<string>())).Returns("dex-content");
-        _sut = new MainViewModel(_apiMock.Object, _dexMock.Object);
+        _apiSub = Substitute.For<IApiService>();
+        _dexSub = Substitute.For<IDexFileService>();
+        _dexSub.LoadDexFile(Arg.Any<string>()).Returns("dex-content");
+        _sut = new MainViewModel(_apiSub, _dexSub);
     }
 
     private void SetupApi(ApiResult result) =>
-        _apiMock.Setup(a => a.SendDexFileAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(result);
+        _apiSub.SendDexFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(result));
 
     // ── IsBusy ────────────────────────────────────────────────────────────────
 
@@ -32,8 +30,7 @@ public class MainViewModelTests
     public async Task IsBusy_IsTrueWhileCommandExecuting()
     {
         var tcs = new TaskCompletionSource<ApiResult>();
-        _apiMock.Setup(a => a.SendDexFileAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Returns(tcs.Task);
+        _apiSub.SendDexFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(tcs.Task);
 
         var commandTask = _sut.SendDexACommand.ExecuteAsync(null);
         Assert.That(_sut.IsBusy, Is.True);
@@ -50,8 +47,7 @@ public class MainViewModelTests
     public async Task BothCommands_CanExecute_IsFalse_WhileIsBusy()
     {
         var tcs = new TaskCompletionSource<ApiResult>();
-        _apiMock.Setup(a => a.SendDexFileAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Returns(tcs.Task);
+        _apiSub.SendDexFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(tcs.Task);
 
         var commandTask = _sut.SendDexACommand.ExecuteAsync(null);
         Assert.Multiple(() =>

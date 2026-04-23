@@ -1,18 +1,17 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using VendSys.Application.DTOs;
 using VendSys.Application.Interfaces;
 using VendSys.Infrastructure.Data;
 
 namespace VendSys.Infrastructure.Repositories;
 
-/// <summary>Persists DEX data by executing stored procedures via EF Core.</summary>
-public class DexRepository : IDexRepository
+/// <summary>Persists DEX data by executing stored procedures via <see cref="ISqlExecutor"/>.</summary>
+public sealed class DexRepository : IDexRepository
 {
-    private readonly VenDexDbContext _context;
+    private readonly ISqlExecutor _executor;
 
-    public DexRepository(VenDexDbContext context) => _context = context;
+    public DexRepository(ISqlExecutor executor) => _executor = executor;
 
     /// <inheritdoc/>
     public async Task<int> SaveDexMeterAsync(DexMeterDto dto)
@@ -23,7 +22,7 @@ public class DexRepository : IDexRepository
         var vendsParam = new SqlParameter("@ValueOfPaidVends", SqlDbType.Decimal) { Value = dto.ValueOfPaidVends, Precision = 10, Scale = 2 };
         var idOutParam = new SqlParameter("@DexMeterId", SqlDbType.Int) { Direction = ParameterDirection.Output };
 
-        await ExecuteAsync(
+        await _executor.ExecuteAsync(
             "EXEC [dbo].[SaveDEXMeter] @Machine, @DEXDateTime, @MachineSerialNumber, @ValueOfPaidVends, @DexMeterId OUTPUT",
             machineParam, dexDateTimeParam, serialParam, vendsParam, idOutParam);
 
@@ -39,12 +38,8 @@ public class DexRepository : IDexRepository
         var vendsParam = new SqlParameter("@NumberOfVends", SqlDbType.Int) { Value = dto.NumberOfVends };
         var salesParam = new SqlParameter("@ValueOfPaidSales", SqlDbType.Decimal) { Value = dto.ValueOfPaidSales, Precision = 10, Scale = 2 };
 
-        await ExecuteAsync(
+        await _executor.ExecuteAsync(
             "EXEC [dbo].[SaveDEXLaneMeter] @DexMeterId, @ProductIdentifier, @Price, @NumberOfVends, @ValueOfPaidSales",
             meterIdParam, productParam, priceParam, vendsParam, salesParam);
     }
-
-    /// <summary>Executes a raw SQL command against the database. Virtual to allow interception in tests.</summary>
-    protected virtual Task ExecuteAsync(string sql, params SqlParameter[] parameters) =>
-        _context.Database.ExecuteSqlRawAsync(sql, (object[])parameters);
 }

@@ -27,18 +27,18 @@ public sealed class ProcessDexFileUseCase
     public async Task<ProcessDexFileResult> ExecuteAsync(string dexText, string machine)
     {
         var document = await _parser.ParseAsync(dexText);
-        document.Meter.Machine = machine;
+        var meter = document.Meter with { Machine = machine };
 
-        var dexMeterId = await _repository.SaveDexMeterAsync(document.Meter);
+        var dexMeterId = await _repository.SaveDexMeterAsync(meter);
 
         foreach (var lane in document.Lanes)
             await _repository.SaveDexLaneMeterAsync(dexMeterId, lane);
 
         return new ProcessDexFileResult(
             machine,
-            document.Meter.MachineSerialNumber,
-            document.Meter.DexDateTime,
-            document.Meter.ValueOfPaidVends,
+            meter.MachineSerialNumber,
+            meter.DexDateTime,
+            meter.ValueOfPaidVends,
             document.Lanes.Count);
     }
 }

@@ -1,4 +1,5 @@
 using System.Reflection;
+using VendSys.Application.DTOs;
 using VendSys.Infrastructure.Parsing;
 
 namespace VendSys.Api.Tests.Parsing;
@@ -8,13 +9,16 @@ public class DexParserServiceTests
 {
     private static string _machineAText = string.Empty;
     private static string _machineBText = string.Empty;
+    private static DexLaneMeterDto _lane101 = null!;
     private DexParserService _sut = null!;
 
     [OneTimeSetUp]
-    public static void LoadDexFiles()
+    public static async Task LoadDexFiles()
     {
         _machineAText = LoadEmbedded("MachineA.txt");
         _machineBText = LoadEmbedded("MachineB.txt");
+        var doc = await new DexParserService().ParseAsync(_machineAText);
+        _lane101 = doc.Lanes.First(l => l.ProductIdentifier == "101");
     }
 
     [SetUp]
@@ -64,28 +68,16 @@ public class DexParserServiceTests
     }
 
     [Test]
-    public async Task ParseAsync_MachineA_Lane101_ReturnsPrice()
-    {
-        var doc = await _sut.ParseAsync(_machineAText);
-        var lane = doc.Lanes.First(l => l.ProductIdentifier == "101");
-        Assert.That(lane.Price, Is.EqualTo(3.25m));
-    }
+    public void ParseAsync_MachineA_Lane101_ReturnsPrice() =>
+        Assert.That(_lane101.Price, Is.EqualTo(3.25m));
 
     [Test]
-    public async Task ParseAsync_MachineA_Lane101_ReturnsNumberOfVends()
-    {
-        var doc = await _sut.ParseAsync(_machineAText);
-        var lane = doc.Lanes.First(l => l.ProductIdentifier == "101");
-        Assert.That(lane.NumberOfVends, Is.EqualTo(4));
-    }
+    public void ParseAsync_MachineA_Lane101_ReturnsNumberOfVends() =>
+        Assert.That(_lane101.NumberOfVends, Is.EqualTo(4));
 
     [Test]
-    public async Task ParseAsync_MachineA_Lane101_ReturnsValueOfPaidSales()
-    {
-        var doc = await _sut.ParseAsync(_machineAText);
-        var lane = doc.Lanes.First(l => l.ProductIdentifier == "101");
-        Assert.That(lane.ValueOfPaidSales, Is.EqualTo(13.00m));
-    }
+    public void ParseAsync_MachineA_Lane101_ReturnsValueOfPaidSales() =>
+        Assert.That(_lane101.ValueOfPaidSales, Is.EqualTo(13.00m));
 
     // ── Machine B ─────────────────────────────────────────────────────────────
 
@@ -116,7 +108,7 @@ public class DexParserServiceTests
     public void ParseAsync_MissingID1Segment_ThrowsInvalidOperationException()
     {
         var text = RemoveLine(_machineAText, "ID1");
-        var ex = Assert.ThrowsAsync<InvalidOperationException>(() => _sut.ParseAsync(text));
+        var ex = Assert.ThrowsAsync<InvalidOperationException>(() => _sut.ParseAsync(text).AsTask());
         Assert.That(ex!.Message, Does.Contain("ID1"));
     }
 
@@ -124,7 +116,7 @@ public class DexParserServiceTests
     public void ParseAsync_MissingVA1Segment_ThrowsInvalidOperationException()
     {
         var text = RemoveLine(_machineAText, "VA1");
-        var ex = Assert.ThrowsAsync<InvalidOperationException>(() => _sut.ParseAsync(text));
+        var ex = Assert.ThrowsAsync<InvalidOperationException>(() => _sut.ParseAsync(text).AsTask());
         Assert.That(ex!.Message, Does.Contain("VA1"));
     }
 
@@ -132,7 +124,7 @@ public class DexParserServiceTests
     public void ParseAsync_MissingID5Segment_ThrowsInvalidOperationException()
     {
         var text = RemoveLine(_machineAText, "ID5");
-        var ex = Assert.ThrowsAsync<InvalidOperationException>(() => _sut.ParseAsync(text));
+        var ex = Assert.ThrowsAsync<InvalidOperationException>(() => _sut.ParseAsync(text).AsTask());
         Assert.That(ex!.Message, Does.Contain("ID5"));
     }
 
@@ -141,13 +133,13 @@ public class DexParserServiceTests
     [Test]
     public void ParseAsync_EmptyBody_ThrowsArgumentException()
     {
-        Assert.ThrowsAsync<ArgumentException>(() => _sut.ParseAsync(string.Empty));
+        Assert.ThrowsAsync<ArgumentException>(() => _sut.ParseAsync(string.Empty).AsTask());
     }
 
     [Test]
     public void ParseAsync_WhitespaceBody_ThrowsArgumentException()
     {
-        Assert.ThrowsAsync<ArgumentException>(() => _sut.ParseAsync("   "));
+        Assert.ThrowsAsync<ArgumentException>(() => _sut.ParseAsync("   ").AsTask());
     }
 
     [Test]
@@ -159,7 +151,7 @@ public class DexParserServiceTests
             "ID5*BADDATE*2310*53*\n" +
             "VA1*34450*0*0*0*0*0*0*0*0*0*0*0\n";
 
-        Assert.ThrowsAsync<FormatException>(() => _sut.ParseAsync(text));
+        Assert.ThrowsAsync<FormatException>(() => _sut.ParseAsync(text).AsTask());
     }
 
     [Test]
@@ -173,6 +165,6 @@ public class DexParserServiceTests
             "PA1*101*325*101****0**\n" +
             "PA2*abc*1300*0*0*0*0*0*0*0*0*0*0\n";
 
-        Assert.ThrowsAsync<FormatException>(() => _sut.ParseAsync(text));
+        Assert.ThrowsAsync<FormatException>(() => _sut.ParseAsync(text).AsTask());
     }
 }

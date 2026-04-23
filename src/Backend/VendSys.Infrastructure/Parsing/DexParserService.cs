@@ -8,7 +8,7 @@ namespace VendSys.Infrastructure.Parsing;
 public sealed class DexParserService : IDexParserService
 {
     /// <inheritdoc/>
-    public Task<DexDocument> ParseAsync(string dexText)
+    public ValueTask<DexDocument> ParseAsync(string dexText)
     {
         if (string.IsNullOrWhiteSpace(dexText))
             throw new ArgumentException("DEX text must not be null or whitespace.", nameof(dexText));
@@ -27,11 +27,15 @@ public sealed class DexParserService : IDexParserService
             switch (fields[0])
             {
                 case "ID1":
+                    if (fields.Length < 2)
+                        throw new InvalidOperationException("Malformed 'ID1' segment: expected at least 2 fields.");
                     machineSerialNumber = fields[1];
                     break;
 
                 case "ID5":
                     // fields[1] = YYYYMMDD, fields[2] = HHMM
+                    if (fields.Length < 3)
+                        throw new InvalidOperationException("Malformed 'ID5' segment: expected at least 3 fields.");
                     dexDateTime = DateTime.ParseExact(
                         fields[1] + fields[2],
                         "yyyyMMddHHmm",
@@ -39,10 +43,14 @@ public sealed class DexParserService : IDexParserService
                     break;
 
                 case "VA1":
+                    if (fields.Length < 2)
+                        throw new InvalidOperationException("Malformed 'VA1' segment: expected at least 2 fields.");
                     valueOfPaidVends = decimal.Parse(fields[1], CultureInfo.InvariantCulture) / 100m;
                     break;
 
                 case "PA1":
+                    if (fields.Length < 3)
+                        throw new InvalidOperationException("Malformed 'PA1' segment: expected at least 3 fields.");
                     currentLane = new DexLaneMeterDto
                     {
                         ProductIdentifier = fields[1],
@@ -54,6 +62,8 @@ public sealed class DexParserService : IDexParserService
                 case "PA2":
                     if (currentLane is not null)
                     {
+                        if (fields.Length < 3)
+                            throw new InvalidOperationException("Malformed 'PA2' segment: expected at least 3 fields.");
                         currentLane.NumberOfVends = int.Parse(fields[1], CultureInfo.InvariantCulture);
                         currentLane.ValueOfPaidSales = decimal.Parse(fields[2], CultureInfo.InvariantCulture) / 100m;
                         // one PA2 per PA1 block; subsequent PA2 lines (if any) are ignored
@@ -70,7 +80,7 @@ public sealed class DexParserService : IDexParserService
         if (valueOfPaidVends is null)
             throw new InvalidOperationException("Required DEX segment 'VA1' is missing.");
 
-        return Task.FromResult(new DexDocument
+        return ValueTask.FromResult(new DexDocument
         {
             Meter = new DexMeterDto
             {

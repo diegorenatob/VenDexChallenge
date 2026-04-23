@@ -1,6 +1,5 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using VendSys.Application.DTOs;
 using VendSys.Infrastructure.Data;
 using VendSys.Infrastructure.Repositories;
@@ -10,10 +9,15 @@ namespace VendSys.Api.Tests.Repository;
 [TestFixture]
 public class DexRepositoryTests
 {
-    private CapturingDexRepository _sut = null!;
+    private CapturingSqlExecutor _executor = null!;
+    private DexRepository _sut = null!;
 
     [SetUp]
-    public void SetUp() => _sut = new CapturingDexRepository();
+    public void SetUp()
+    {
+        _executor = new CapturingSqlExecutor();
+        _sut = new DexRepository(_executor);
+    }
 
     // ── SaveDexMeterAsync ─────────────────────────────────────────────────────
 
@@ -21,7 +25,7 @@ public class DexRepositoryTests
     public async Task SaveDexMeterAsync_ExecutesCorrectStoredProcedureName()
     {
         await _sut.SaveDexMeterAsync(BuildMeterDto());
-        Assert.That(_sut.CapturedSql, Does.Contain("SaveDEXMeter"));
+        Assert.That(_executor.CapturedSql, Does.Contain("SaveDEXMeter"));
     }
 
     [Test]
@@ -60,7 +64,7 @@ public class DexRepositoryTests
     [Test]
     public async Task SaveDexMeterAsync_ReadsOutputParameterAsReturnValue()
     {
-        _sut.OutputValue = 42;
+        _executor.OutputValue = 42;
         var result = await _sut.SaveDexMeterAsync(BuildMeterDto());
         Assert.That(result, Is.EqualTo(42));
     }
@@ -71,7 +75,7 @@ public class DexRepositoryTests
     public async Task SaveDexLaneMeterAsync_ExecutesCorrectStoredProcedureName()
     {
         await _sut.SaveDexLaneMeterAsync(1, BuildLaneDto());
-        Assert.That(_sut.CapturedSql, Does.Contain("SaveDEXLaneMeter"));
+        Assert.That(_executor.CapturedSql, Does.Contain("SaveDEXLaneMeter"));
     }
 
     [Test]
@@ -117,7 +121,7 @@ public class DexRepositoryTests
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private SqlParameter GetParam(string name) =>
-        _sut.CapturedParameters!.First(p => p.ParameterName == name);
+        _executor.CapturedParameters!.First(p => p.ParameterName == name);
 
     private static DexMeterDto BuildMeterDto(
         string machine = "A",
@@ -148,23 +152,13 @@ public class DexRepositoryTests
 
 // ── Test double ───────────────────────────────────────────────────────────────
 
-internal sealed class CapturingDexRepository : DexRepository
+internal sealed class CapturingSqlExecutor : ISqlExecutor
 {
     public string? CapturedSql { get; private set; }
     public SqlParameter[]? CapturedParameters { get; private set; }
     public int OutputValue { get; set; } = 1;
 
-    public CapturingDexRepository() : base(CreateContext()) { }
-
-    private static VenDexDbContext CreateContext()
-    {
-        var options = new DbContextOptionsBuilder<VenDexDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
-        return new VenDexDbContext(options);
-    }
-
-    protected override Task ExecuteAsync(string sql, params SqlParameter[] parameters)
+    public Task ExecuteAsync(string sql, params SqlParameter[] parameters)
     {
         CapturedSql = sql;
         CapturedParameters = parameters;

@@ -56,6 +56,12 @@ public sealed partial class MainViewModel : ViewModelBase
                 OnSendFailed?.Invoke(this, StatusMessage);
             }
         }
+        catch (Exception ex)
+        {
+            StatusMessage = ex.Message;
+            IsError = true;
+            OnSendFailed?.Invoke(this, StatusMessage);
+        }
         finally
         {
             IsBusy = false;

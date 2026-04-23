@@ -12,5 +12,5 @@ public interface IDexParserService
     /// <returns>A <see cref="DexDocument"/> containing meter and lane readings.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="dexText"/> is null or whitespace.</exception>
     /// <exception cref="InvalidOperationException">Thrown when a required DEX segment is missing.</exception>
-    Task<DexDocument> ParseAsync(string dexText);
+    ValueTask<DexDocument> ParseAsync(string dexText);
 }

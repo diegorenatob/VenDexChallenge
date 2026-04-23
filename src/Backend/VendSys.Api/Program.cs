@@ -25,6 +25,7 @@ builder.Services.AddDbContext<VenDexDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IDexParserService, DexParserService>();
+builder.Services.AddScoped<ISqlExecutor, EfSqlExecutor>();
 builder.Services.AddScoped<IDexRepository, DexRepository>();
 builder.Services.AddScoped<ProcessDexFileUseCase>();
 

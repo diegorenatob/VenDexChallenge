@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
+using NSubstitute;
 using VendSys.Application.DTOs;
 using VendSys.Application.Interfaces;
 using VendSys.Infrastructure.Data;
@@ -32,16 +32,15 @@ internal sealed class TestWebAppFactory : WebApplicationFactory<Program>
             services.AddDbContext<VenDexDbContext>(o =>
                 o.UseInMemoryDatabase("auth-tests"));
 
-            // Replace IDexRepository with a mock that returns fixed values
+            // Replace IDexRepository with a substitute that returns fixed values
             var repoDesc = services.SingleOrDefault(d =>
                 d.ServiceType == typeof(IDexRepository));
             if (repoDesc is not null) services.Remove(repoDesc);
 
-            var mockRepo = new Mock<IDexRepository>();
-            mockRepo.Setup(r => r.SaveDexMeterAsync(It.IsAny<DexMeterDto>())).ReturnsAsync(1);
-            mockRepo.Setup(r => r.SaveDexLaneMeterAsync(It.IsAny<int>(), It.IsAny<DexLaneMeterDto>()))
-                .Returns(Task.CompletedTask);
-            services.AddScoped<IDexRepository>(_ => mockRepo.Object);
+            var repoSub = Substitute.For<IDexRepository>();
+            repoSub.SaveDexMeterAsync(Arg.Any<DexMeterDto>()).Returns(Task.FromResult(1));
+            repoSub.SaveDexLaneMeterAsync(Arg.Any<int>(), Arg.Any<DexLaneMeterDto>()).Returns(Task.CompletedTask);
+            services.AddScoped<IDexRepository>(_ => repoSub);
         });
     }
 }
