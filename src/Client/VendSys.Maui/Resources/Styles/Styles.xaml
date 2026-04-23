@@ -446,7 +446,7 @@
 
     <Style x:Key="DangerButtonStyle" TargetType="Button">
         <Setter Property="TextColor" Value="{StaticResource White}" />
-        <Setter Property="BackgroundColor" Value="{StaticResource DangerColor}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource DangerColor}, Dark={StaticResource DangerDarkColor}}" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="BorderWidth" Value="0"/>
