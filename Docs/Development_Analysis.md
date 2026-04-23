@@ -73,9 +73,4 @@ The complete solution is publicly available on my personal GitHub repository:
 
 The repository includes the full commit history, which reflects how the solution was built and refined incrementally — from initial scaffolding through architecture documents, feature implementation, and final optimisations. Reviewers are welcome to browse the commit log as a transparent record of the AI-assisted development process described in this document.
 
-I also invite you to explore my repository, in particular:
-[github.com/diegorenatob/AlohaPDF](https://github.com/diegorenatob/AlohaPDF)
-
-AlohaPDF is an open source library I authored for generating PDF documents in .NET MAUI using the SkiaSharp graphics engine. It is currently the only fully free and open source PDF generation library available for .NET MAUI that can be used without a paid licence — for both open source and commercial projects alike.
-
 Finally, the full conversation log with the Claude AI tool (Anthropic) is attached as a separate Markdown file. It provides a complete and unedited record of every prompt used throughout this project, along with the AI's responses, as requested in the challenge submission guidelines.
