@@ -1,4 +1,4 @@
-# VendSys Challenge
+# VendSys DEX Challenge
 
 A full-stack system for receiving, parsing, and persisting DEX vending machine data. Built with ASP.NET Core 9 Minimal API, SQL Server, and .NET MAUI.
 
