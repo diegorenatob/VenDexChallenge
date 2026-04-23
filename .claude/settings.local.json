@@ -39,7 +39,10 @@
       "Bash(sqlcmd -S '\\(localdb\\)\\\\MSSQLLocalDB' -d VenDex_Verify -Q ' *)",
       "Bash(sqlcmd -S \"\\(localdb\\)\\\\MSSQLLocalDB\" -Q \"DROP DATABASE [VenDex_Verify];\")",
       "Bash(git mv *)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(sqlcmd -S \"\\(localdb\\)\\\\MSSQLLocalDB\" -Q \"BACKUP DATABASE [VendSys] TO DISK = 'd:\\\\GitHub\\\\VenDexChallenge\\\\Database\\\\VendSys.bak' WITH FORMAT, INIT, NAME = 'VendSys Full Backup';\")",
+      "Bash(sqlcmd -S '\\(localdb\\)\\\\MSSQLLocalDB' -d VendSys_Verify -Q ' *)",
+      "Bash(sqlcmd -S \"\\(localdb\\)\\\\MSSQLLocalDB\" -Q \"DROP DATABASE [VendSys_Verify];\")"
     ]
   }
 }
