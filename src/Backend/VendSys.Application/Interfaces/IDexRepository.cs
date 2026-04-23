@@ -18,4 +18,7 @@ public interface IDexRepository
     /// <param name="dexMeterId">The parent meter identifier returned by <see cref="SaveDexMeterAsync"/>.</param>
     /// <param name="dto">The lane data to persist.</param>
     Task SaveDexLaneMeterAsync(int dexMeterId, DexLaneMeterDto dto);
+
+    /// <summary>Deletes all rows from DEXLaneMeter and DEXMeter and reseeds their identity columns.</summary>
+    Task ClearAllDataAsync();
 }

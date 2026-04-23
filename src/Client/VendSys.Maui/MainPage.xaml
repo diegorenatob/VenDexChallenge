@@ -29,6 +29,13 @@
                     SemanticProperties.Description="Send Machine B"
                     SemanticProperties.Hint="Sends DEX data for Machine B to the server" />
 
+            <Button Text="Clear All Data"
+                    Command="{Binding ClearTablesCommand}"
+                    Style="{StaticResource DangerButtonStyle}"
+                    HorizontalOptions="Fill"
+                    SemanticProperties.Description="Clear All Data"
+                    SemanticProperties.Hint="Clears all DEX records from the database" />
+
             <ActivityIndicator IsRunning="{Binding IsBusy}"
                                IsVisible="{Binding IsBusy}"
                                HorizontalOptions="Center"

@@ -43,4 +43,25 @@ public sealed class ApiService : IApiService
             return ApiResult.Failure(ex.Message);
         }
     }
+
+    public async Task<ApiResult> ClearAllDataAsync()
+    {
+        try
+        {
+            var client = _httpClientFactory.CreateClient(ApiConstants.HttpClientName);
+            var request = new HttpRequestMessage(HttpMethod.Delete, ApiConstants.ClearEndpoint);
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue(ApiConstants.AuthScheme, _encodedCredentials);
+
+            var response = await client.SendAsync(request);
+
+            return response.IsSuccessStatusCode
+                ? ApiResult.Success()
+                : ApiResult.Failure($"Server returned {(int)response.StatusCode} {response.ReasonPhrase}.");
+        }
+        catch (HttpRequestException ex)
+        {
+            return ApiResult.Failure(ex.Message);
+        }
+    }
 }

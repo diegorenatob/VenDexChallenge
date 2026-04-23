@@ -15,6 +15,7 @@ public sealed partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SendDexACommand))]
     [NotifyCanExecuteChangedFor(nameof(SendDexBCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ClearTablesCommand))]
     private bool _isBusy;
 
     [ObservableProperty]
@@ -34,6 +35,40 @@ public sealed partial class MainViewModel : ViewModelBase
 
     [RelayCommand(CanExecute = nameof(CanSend))]
     private async Task SendDexBAsync() => await SendDexFileAsync(Machines.B);
+
+    [RelayCommand(CanExecute = nameof(CanSend))]
+    private async Task ClearTablesAsync()
+    {
+        bool confirmed = await Shell.Current.DisplayAlert(
+            "Clear All Data",
+            "This will permanently delete all records from both tables. This action cannot be undone. Are you sure?",
+            "Yes, clear",
+            "Cancel");
+
+        if (!confirmed) return;
+
+        IsBusy = true;
+        try
+        {
+            var result = await _apiService.ClearAllDataAsync();
+            if (result.IsSuccess)
+            {
+                StatusMessage = "All data cleared successfully.";
+                IsError = false;
+                await Shell.Current.DisplayAlert("Success", "Tables cleared successfully.", "OK");
+            }
+            else
+            {
+                StatusMessage = result.ErrorMessage ?? "An error occurred.";
+                IsError = true;
+                await Shell.Current.DisplayAlert("Error", "Failed to clear tables. Please try again.", "OK");
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
 
     private bool CanSend() => !IsBusy;
 

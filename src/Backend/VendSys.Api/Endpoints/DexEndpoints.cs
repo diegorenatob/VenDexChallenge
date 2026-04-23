@@ -1,13 +1,17 @@
+using VendSys.Application.Interfaces;
 using VendSys.Application.UseCases;
 
 namespace VendSys.Api.Endpoints;
 
-/// <summary>Maps the POST /vdi-dex endpoint.</summary>
+/// <summary>Maps /vdi-dex endpoints.</summary>
 public static class DexEndpoints
 {
     public static void MapDexEndpoints(this WebApplication app)
     {
         app.MapPost("/vdi-dex", HandleAsync)
+           .RequireAuthorization();
+
+        app.MapDelete("/vdi-dex/clear", HandleClearAsync)
            .RequireAuthorization();
     }
 
@@ -29,5 +33,11 @@ public static class DexEndpoints
         var result = await useCase.ExecuteAsync(dexText, machine);
 
         return Results.Ok(result);
+    }
+
+    private static async Task<IResult> HandleClearAsync(IDexRepository repository)
+    {
+        await repository.ClearAllDataAsync();
+        return Results.NoContent();
     }
 }

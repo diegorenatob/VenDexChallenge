@@ -42,4 +42,8 @@ public sealed class DexRepository : IDexRepository
             "EXEC [dbo].[SaveDEXLaneMeter] @DexMeterId, @ProductIdentifier, @Price, @NumberOfVends, @ValueOfPaidSales",
             meterIdParam, productParam, priceParam, vendsParam, salesParam);
     }
+
+    /// <inheritdoc/>
+    public async Task ClearAllDataAsync() =>
+        await _executor.ExecuteAsync("EXEC [dbo].[ClearAllData]");
 }
