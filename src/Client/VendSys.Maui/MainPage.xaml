@@ -4,14 +4,14 @@
              xmlns:viewmodels="clr-namespace:VendSys.Maui.ViewModels"
              x:Class="VendSys.Maui.MainPage"
              x:DataType="viewmodels:MainViewModel"
-             Title="VenDex">
+             Title="VendSys">
 
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="24" VerticalOptions="Center">
 
-            <Label Text="VenDex"
+            <Label Text="VendSys"
                    Style="{StaticResource Headline}"
-                   SemanticProperties.Description="VenDex application heading" />
+                   SemanticProperties.Description="VendSys application heading" />
 
             <Label Text="Send vending machine DEX data to the server"
                    Style="{StaticResource SubHeadline}"

@@ -61,7 +61,7 @@ public class BasicAuthHandlerTests
     {
         var response = await _client.SendAsync(BuildPost(BasicHeader("testuser:wrong")));
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
-        Assert.That(response.Headers.WwwAuthenticate.ToString(), Does.Contain("Basic realm=\"VenDex\""));
+        Assert.That(response.Headers.WwwAuthenticate.ToString(), Does.Contain("Basic realm=\"VendSys\""));
     }
 
     [Test]
@@ -69,7 +69,7 @@ public class BasicAuthHandlerTests
     {
         var response = await _client.SendAsync(BuildPost(BasicHeader("wrong:testpass")));
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
-        Assert.That(response.Headers.WwwAuthenticate.ToString(), Does.Contain("Basic realm=\"VenDex\""));
+        Assert.That(response.Headers.WwwAuthenticate.ToString(), Does.Contain("Basic realm=\"VendSys\""));
     }
 
     [Test]
@@ -77,7 +77,7 @@ public class BasicAuthHandlerTests
     {
         var response = await _client.SendAsync(BuildPost(authHeader: null));
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
-        Assert.That(response.Headers.WwwAuthenticate.ToString(), Does.Contain("Basic realm=\"VenDex\""));
+        Assert.That(response.Headers.WwwAuthenticate.ToString(), Does.Contain("Basic realm=\"VendSys\""));
     }
 
     [Test]
@@ -85,7 +85,7 @@ public class BasicAuthHandlerTests
     {
         var response = await _client.SendAsync(BuildPost("not-valid-base64!!!"));
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
-        Assert.That(response.Headers.WwwAuthenticate.ToString(), Does.Contain("Basic realm=\"VenDex\""));
+        Assert.That(response.Headers.WwwAuthenticate.ToString(), Does.Contain("Basic realm=\"VendSys\""));
     }
 
     [Test]
@@ -99,7 +99,7 @@ public class BasicAuthHandlerTests
 
         var response = await _client.SendAsync(request);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
-        Assert.That(response.Headers.WwwAuthenticate.ToString(), Does.Contain("Basic realm=\"VenDex\""));
+        Assert.That(response.Headers.WwwAuthenticate.ToString(), Does.Contain("Basic realm=\"VendSys\""));
     }
 
     [Test]
@@ -108,6 +108,6 @@ public class BasicAuthHandlerTests
         // "testuser" base64 encoded — no colon in decoded value
         var response = await _client.SendAsync(BuildPost(BasicHeader("testuser")));
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
-        Assert.That(response.Headers.WwwAuthenticate.ToString(), Does.Contain("Basic realm=\"VenDex\""));
+        Assert.That(response.Headers.WwwAuthenticate.ToString(), Does.Contain("Basic realm=\"VendSys\""));
     }
 }

@@ -1,4 +1,4 @@
-# VenDex API — Docker Compose
+# VendSys API — Docker Compose
 #
 # Prerequisites:
 #   - SQL Server LocalDB or a full SQL Server instance accessible from the host
@@ -14,20 +14,20 @@
 #   host.docker.internal resolves to the host machine from inside the container.
 #
 # Example with a local SQL Server instance using SQL auth:
-#   Server=host.docker.internal,1433;Database=VenDex;User Id=sa;Password=<YourPassword>;
+#   Server=host.docker.internal,1433;Database=VendSys;User Id=sa;Password=<YourPassword>;
 
 services:
-  vendex-api:
+  VendSys-api:
     build:
       context: .
       dockerfile: src/Backend/VendSys.Api/Dockerfile
-    image: vendex-api
+    image: VendSys-api
     ports:
       - "8080:8080"
     volumes:
       - ./logs:/app/logs
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__DefaultConnection: "Server=host.docker.internal,1433;Database=VenDex;User Id=sa;Password=<YourPassword>;MultipleActiveResultSets=False;TrustServerCertificate=True;"
+      ConnectionStrings__DefaultConnection: "Server=host.docker.internal,1433;Database=VendSys;User Id=sa;Password=<YourPassword>;MultipleActiveResultSets=False;TrustServerCertificate=True;"
     extra_hosts:
       - "host.docker.internal:host-gateway"

@@ -27,9 +27,9 @@ internal sealed class TestWebAppFactory : WebApplicationFactory<Program>
         {
             // Replace SQL Server DbContext with InMemory so no real DB is needed
             var dbDesc = services.SingleOrDefault(d =>
-                d.ServiceType == typeof(DbContextOptions<VenDexDbContext>));
+                d.ServiceType == typeof(DbContextOptions<VendSysDbContext>));
             if (dbDesc is not null) services.Remove(dbDesc);
-            services.AddDbContext<VenDexDbContext>(o =>
+            services.AddDbContext<VendSysDbContext>(o =>
                 o.UseInMemoryDatabase("auth-tests"));
 
             // Replace IDexRepository with a substitute that returns fixed values

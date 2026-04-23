@@ -2,7 +2,7 @@ namespace VendSys.Maui.Infrastructure;
 
 public static class ApiConstants
 {
-    public const string HttpClientName = "VenDexClient";
+    public const string HttpClientName = "VendSysClient";
     public const string BaseUrl = "http://localhost:5000";
     public const string DexEndpoint = "/vdi-dex";
     public const string ClearEndpoint = "/vdi-dex/clear";

@@ -21,7 +21,7 @@ builder.Host.UseSerilog((ctx, cfg) => cfg
         rollingInterval: RollingInterval.Day,
         retainedFileCountLimit: 14));
 
-builder.Services.AddDbContext<VenDexDbContext>(options =>
+builder.Services.AddDbContext<VendSysDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IDexParserService, DexParserService>();

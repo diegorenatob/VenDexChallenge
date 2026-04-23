@@ -63,7 +63,7 @@ public sealed class BasicAuthHandler : AuthenticationHandler<AuthenticationSchem
 
     protected override Task HandleChallengeAsync(AuthenticationProperties properties)
     {
-        Response.Headers.WWWAuthenticate = "Basic realm=\"VenDex\"";
+        Response.Headers.WWWAuthenticate = "Basic realm=\"VendSys\"";
         return base.HandleChallengeAsync(properties);
     }
 }

@@ -25,7 +25,21 @@
       "Bash(dotnet ef *)",
       "Bash(dotnet test *)",
       "Bash(powershell -Command \"[System.Guid]::NewGuid\\(\\).ToString\\('B'\\).ToUpper\\(\\); [System.Guid]::NewGuid\\(\\).ToString\\('B'\\).ToUpper\\(\\)\")",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\rd_25\\\\AppData\\\\Roaming\\\\Code\\\\logs\" -Recurse -File | Where-Object { $_.Length -gt 0 } | Select-Object FullName, Length | Sort-Object Length -Descending | Select-Object -First 30)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\rd_25\\\\AppData\\\\Roaming\\\\Code\\\\logs\" -Recurse | ForEach-Object { $_.FullName } | Select-Object -First 50)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\rd_25\\\\AppData\\\\Roaming\\\\Code\\\\logs\" -Recurse | Where-Object { $_.Name -eq \"Claude VSCode.log\" } | Select-Object FullName, Length, LastWriteTime | Sort-Object Length -Descending)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\rd_25\\\\.claude\\\\projects\" -Recurse | ForEach-Object { $_.FullName } | Select-Object -First 40)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\rd_25\\\\.claude\\\\projects\\\\d--GitHub-VenDexChallenge\" -Recurse | ForEach-Object { $_.FullName + \" \\(\" + $_.Length + \" bytes\\)\" })",
+      "Bash(sqlcmd -S \"\\(localdb\\)\\\\MSSQLLocalDB\" -Q \"SELECT name FROM sys.databases WHERE name = 'VenDex'\")",
+      "Bash(sqlcmd -S \"\\(localdb\\)\\\\MSSQLLocalDB\" -Q \"BACKUP DATABASE [VenDex] TO DISK = 'd:\\\\GitHub\\\\VenDexChallenge\\\\Database\\\\VenDex.bak' WITH FORMAT, INIT, NAME = 'VenDex Full Backup', COMPRESSION;\")",
+      "Bash(sqlcmd -S \"\\(localdb\\)\\\\MSSQLLocalDB\" -Q \"BACKUP DATABASE [VenDex] TO DISK = 'd:\\\\GitHub\\\\VenDexChallenge\\\\Database\\\\VenDex.bak' WITH FORMAT, INIT, NAME = 'VenDex Full Backup';\")",
+      "Bash(sqlcmd -S \"\\(localdb\\)\\\\MSSQLLocalDB\" -Q \"RESTORE DATABASE [VenDex_Verify] FROM DISK = 'd:\\\\GitHub\\\\VenDexChallenge\\\\Database\\\\VenDex.bak' WITH MOVE 'VenDex' TO 'd:\\\\GitHub\\\\VenDexChallenge\\\\Database\\\\VenDex_Verify.mdf', MOVE 'VenDex_log' TO 'd:\\\\GitHub\\\\VenDexChallenge\\\\Database\\\\VenDex_Verify_log.ldf', REPLACE;\")",
+      "Bash(sqlcmd -S '\\(localdb\\)\\\\MSSQLLocalDB' -Q ' *)",
+      "Bash(sqlcmd -S '\\(localdb\\)\\\\MSSQLLocalDB' -d VenDex_Verify -Q ' *)",
+      "Bash(sqlcmd -S \"\\(localdb\\)\\\\MSSQLLocalDB\" -Q \"DROP DATABASE [VenDex_Verify];\")",
+      "Bash(git mv *)",
+      "Bash(git rm *)"
     ]
   }
 }

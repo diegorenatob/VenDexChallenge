@@ -1,9 +1,9 @@
-# VenDex Challenge — API Design
+# VendSys Challenge — API Design
 
 ## 1. Overview
 
 **Framework:** ASP.NET Core 9 Minimal API  
-**Project:** `VenDex.Api`  
+**Project:** `VendSys.Api`  
 **Endpoint count:** 1  
 **Auth scheme:** HTTP Basic Authentication
 
@@ -84,7 +84,7 @@ Returned when the `Authorization` header is absent, malformed, or the decoded cr
 
 ```
 HTTP/1.1 401 Unauthorized
-WWW-Authenticate: Basic realm="VenDex"
+WWW-Authenticate: Basic realm="VendSys"
 ```
 
 Body: empty (standard HTTP 401 — no JSON, to avoid leaking auth detail).
@@ -249,7 +249,7 @@ The endpoint is decorated with `[Authorize]` (or `.RequireAuthorization()` in Mi
 `BasicAuthHandler.ChallengeAsync` adds the `WWW-Authenticate` header:
 
 ```
-WWW-Authenticate: Basic realm="VenDex"
+WWW-Authenticate: Basic realm="VendSys"
 ```
 
 ### 7.4 Credentials in appsettings.json
@@ -325,13 +325,13 @@ app.UseSerilogRequestLogging(options =>
 ## 10. Concurrency
 
 - All I/O operations are `async`/`await` throughout (no blocking `.Result` or `.Wait()`).
-- `VenDexDbContext` is registered with `AddDbContext<>` (scoped lifetime) — each request receives its own context instance from the DI scope.
+- `VendSysDbContext` is registered with `AddDbContext<>` (scoped lifetime) — each request receives its own context instance from the DI scope.
 - `ProcessDexFileUseCase` and its dependencies are scoped or transient — no shared mutable state.
 - SQL Server handles concurrent stored procedure calls naturally via row-level locking.
 
 ---
 
-## 11. DI Registration Summary (VenDex.Api — Program.cs)
+## 11. DI Registration Summary (VendSys.Api — Program.cs)
 
 ```csharp
 // Auth
@@ -345,7 +345,7 @@ builder.Services.Configure<BasicAuthOptions>(
     builder.Configuration.GetSection("BasicAuth"));
 
 // Database
-builder.Services.AddDbContext<VenDexDbContext>(options =>
+builder.Services.AddDbContext<VendSysDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Application layer

@@ -1,4 +1,4 @@
-# VenDex Challenge — Feature Backlog
+# VendSys Challenge — Feature Backlog
 
 Features are ordered for implementation. Each feature builds on the previous ones — no feature depends on anything not yet built.
 
@@ -12,10 +12,10 @@ Features are ordered for implementation. Each feature builds on the previous one
 Initialise the solution file and all six projects in their correct folder positions. Add project references to wire up the dependency graph. Install base NuGet packages in each project. Ensure the solution builds with zero errors before any business logic is written.
 
 **Acceptance Criteria:**
-- `VenDexChallenge.sln` exists at the repo root
-- Projects created: `VenDex.Domain`, `VenDex.Application`, `VenDex.Infrastructure`, `VenDex.Api`, `VenDex.Maui`, `VenDex.Tests`, `VenDex.Maui.Tests`
+- `VendSysChallenge.sln` exists at the repo root
+- Projects created: `VendSys.Domain`, `VendSys.Application`, `VendSys.Infrastructure`, `VendSys.Api`, `VendSys.Maui`, `VendSys.Tests`, `VendSys.Maui.Tests`
 - Project references match the dependency graph: API → Application + Infrastructure; Infrastructure → Application + Domain; Application → Domain
-- `dotnet build VenDexChallenge.sln` succeeds with zero errors and zero warnings
+- `dotnet build VendSysChallenge.sln` succeeds with zero errors and zero warnings
 - All `.csproj` files target `net9.0` (or `net9.0-windows10.0.19041.0;net9.0-android;net9.0-ios` for MAUI)
 - File-scoped namespaces configured as the default via `<Nullable>enable</Nullable>` and `<ImplicitUsings>enable</ImplicitUsings>` in each project
 
@@ -25,13 +25,13 @@ Initialise the solution file and all six projects in their correct folder positi
 
 ## Feature 2 — EF Core Setup: DbContext, Entity Configurations, Initial Migration
 
-**Title:** Configure EF Core 9 with `VenDexDbContext` and create the `InitialCreate` migration
+**Title:** Configure EF Core 9 with `VendSysDbContext` and create the `InitialCreate` migration
 
 **Description:**  
-Add EF Core 9 and `Microsoft.EntityFrameworkCore.SqlServer` to `VenDex.Infrastructure`. Create `VenDexDbContext` with `DbSet<DexMeter>` and `DbSet<DexLaneMeter>`. Implement `IEntityTypeConfiguration<T>` for both entities to define table names, column types, the primary keys, the unique constraint on `(Machine, DEXDateTime)`, and the FK between tables. Register the context in `VenDex.Api` using the `DefaultConnection` string. Run the first migration so the database and both tables are created in LocalDB.
+Add EF Core 9 and `Microsoft.EntityFrameworkCore.SqlServer` to `VendSys.Infrastructure`. Create `VendSysDbContext` with `DbSet<DexMeter>` and `DbSet<DexLaneMeter>`. Implement `IEntityTypeConfiguration<T>` for both entities to define table names, column types, the primary keys, the unique constraint on `(Machine, DEXDateTime)`, and the FK between tables. Register the context in `VendSys.Api` using the `DefaultConnection` string. Run the first migration so the database and both tables are created in LocalDB.
 
 **Acceptance Criteria:**
-- `VenDexDbContext` registered as scoped in `Program.cs` with connection string from `appsettings.json`
+- `VendSysDbContext` registered as scoped in `Program.cs` with connection string from `appsettings.json`
 - `DexMeterConfiguration` sets: table `DEXMeter`, PK `DexMeterId`, column types per database design, unique index on `(Machine, DEXDateTime)`
 - `DexLaneMeterConfiguration` sets: table `DEXLaneMeter`, PK `DexLaneMeterId`, FK to `DEXMeter.DexMeterId` with cascade delete, all column types per database design
 - `dotnet ef migrations add InitialCreate` produces a migration that creates both tables with correct DDL
@@ -67,10 +67,10 @@ Create a second migration (`AddStoredProcedures`) that adds the three SPs using 
 **Title:** Define `DexMeter`, `DexLaneMeter` entities and the `IDexParserService` / `IDexRepository` interfaces
 
 **Description:**  
-In `VenDex.Domain`, create the two entity classes with properties matching the database columns. In `VenDex.Application`, create `DexMeterDto`, `DexLaneMeterDto`, `DexDocument` (the parse result), and the two interfaces: `IDexParserService` (takes raw string, returns `DexDocument`) and `IDexRepository` (two async write methods). No implementations yet.
+In `VendSys.Domain`, create the two entity classes with properties matching the database columns. In `VendSys.Application`, create `DexMeterDto`, `DexLaneMeterDto`, `DexDocument` (the parse result), and the two interfaces: `IDexParserService` (takes raw string, returns `DexDocument`) and `IDexRepository` (two async write methods). No implementations yet.
 
 **Acceptance Criteria:**
-- `DexMeter` and `DexLaneMeter` entities in `VenDex.Domain` have no EF Core or framework references
+- `DexMeter` and `DexLaneMeter` entities in `VendSys.Domain` have no EF Core or framework references
 - `DexMeterDto` fields: `Machine`, `DexDateTime`, `MachineSerialNumber`, `ValueOfPaidVends`
 - `DexLaneMeterDto` fields: `ProductIdentifier`, `Price`, `NumberOfVends`, `ValueOfPaidSales`
 - `DexDocument` holds one `DexMeterDto` and a `List<DexLaneMeterDto>`
@@ -88,7 +88,7 @@ In `VenDex.Domain`, create the two entity classes with properties matching the d
 **Title:** Implement `DexParserService` that extracts ID, VA, and all PA segments from a DEX string
 
 **Description:**  
-In `VenDex.Infrastructure/Parsing/DexParserService.cs`, implement `IDexParserService`. Split the input by newline, iterate segments. Extract `MachineSerialNumber` from `ID1[0]`, `DexDateTime` from `ID5[0]` + `ID5[1]` (combined with `DateTime.ParseExact`), and `ValueOfPaidVends` from `VA1[0]` (divide cents by 100). For each `PA1` segment, create a `DexLaneMeterDto`; populate it with price from `PA1[1]` (cents ÷ 100) and then read `PA2[0]` (NumberOfVends) and `PA2[1]` (ValueOfPaidSales, cents ÷ 100) from the immediately following `PA2` line. Throw `ArgumentException` on null/empty input. Throw `InvalidOperationException` on missing required segments.
+In `VendSys.Infrastructure/Parsing/DexParserService.cs`, implement `IDexParserService`. Split the input by newline, iterate segments. Extract `MachineSerialNumber` from `ID1[0]`, `DexDateTime` from `ID5[0]` + `ID5[1]` (combined with `DateTime.ParseExact`), and `ValueOfPaidVends` from `VA1[0]` (divide cents by 100). For each `PA1` segment, create a `DexLaneMeterDto`; populate it with price from `PA1[1]` (cents ÷ 100) and then read `PA2[0]` (NumberOfVends) and `PA2[1]` (ValueOfPaidSales, cents ÷ 100) from the immediately following `PA2` line. Throw `ArgumentException` on null/empty input. Throw `InvalidOperationException` on missing required segments.
 
 **Acceptance Criteria:**
 - `ParseAsync("") ` throws `ArgumentException`
@@ -110,7 +110,7 @@ In `VenDex.Infrastructure/Parsing/DexParserService.cs`, implement `IDexParserSer
 **Title:** Implement `DexRepository` that calls `SaveDEXMeter` and `SaveDEXLaneMeter` via EF Core
 
 **Description:**  
-In `VenDex.Infrastructure/Repositories/DexRepository.cs`, implement `IDexRepository`. `SaveDexMeterAsync` builds `SqlParameter` objects (including one `OUTPUT` parameter for `@DexMeterId`), calls `context.Database.ExecuteSqlRawAsync("EXEC SaveDEXMeter ...")`, reads the output parameter value, and returns the integer. `SaveDexLaneMeterAsync` builds input-only `SqlParameter` objects and calls `ExecuteSqlRawAsync("EXEC SaveDEXLaneMeter ...")`. Register `DexRepository` as scoped in `Program.cs`.
+In `VendSys.Infrastructure/Repositories/DexRepository.cs`, implement `IDexRepository`. `SaveDexMeterAsync` builds `SqlParameter` objects (including one `OUTPUT` parameter for `@DexMeterId`), calls `context.Database.ExecuteSqlRawAsync("EXEC SaveDEXMeter ...")`, reads the output parameter value, and returns the integer. `SaveDexLaneMeterAsync` builds input-only `SqlParameter` objects and calls `ExecuteSqlRawAsync("EXEC SaveDEXLaneMeter ...")`. Register `DexRepository` as scoped in `Program.cs`.
 
 **Acceptance Criteria:**
 - `SaveDexMeterAsync` calls the SP with correct parameter names and returns the generated `DexMeterId`
@@ -129,7 +129,7 @@ In `VenDex.Infrastructure/Repositories/DexRepository.cs`, implement `IDexReposit
 **Title:** Implement the `POST /vdi-dex` Minimal API endpoint
 
 **Description:**  
-In `VenDex.Api/Endpoints/DexEndpoints.cs`, map `POST /vdi-dex`. Read the `machine` query param; return 400 if absent or not `"A"`/`"B"`. Read the request body as a string; return 400 if empty. Delegate to `ProcessDexFileUseCase.ExecuteAsync(dexText, machine)`. Return 200 with the summary JSON response shape defined in `api-design.md`. Implement `ProcessDexFileUseCase` in `VenDex.Application` to orchestrate the parser and repository calls.
+In `VendSys.Api/Endpoints/DexEndpoints.cs`, map `POST /vdi-dex`. Read the `machine` query param; return 400 if absent or not `"A"`/`"B"`. Read the request body as a string; return 400 if empty. Delegate to `ProcessDexFileUseCase.ExecuteAsync(dexText, machine)`. Return 200 with the summary JSON response shape defined in `api-design.md`. Implement `ProcessDexFileUseCase` in `VendSys.Application` to orchestrate the parser and repository calls.
 
 **Acceptance Criteria:**
 - `POST /vdi-dex?machine=A` with valid DEX body and correct auth returns 200 with JSON matching the response shape
@@ -149,7 +149,7 @@ In `VenDex.Api/Endpoints/DexEndpoints.cs`, map `POST /vdi-dex`. Read the `machin
 **Title:** Implement `BasicAuthHandler` and register it as the "Basic" authentication scheme
 
 **Description:**  
-In `VenDex.Api/Auth/BasicAuthHandler.cs`, extend `AuthenticationHandler<AuthenticationSchemeOptions>`. In `HandleAuthenticateAsync`, read the `Authorization` header, verify the scheme is `"Basic"`, base64-decode the credentials, split on the first `:`, and compare against `BasicAuth:Username` and `BasicAuth:Password` from `IConfiguration`. Return `AuthenticateResult.Fail(...)` for any mismatch. Override `HandleChallengeAsync` to add the `WWW-Authenticate: Basic realm="VenDex"` header before the 401 response. Register the scheme and `AddAuthorization()` in `Program.cs`.
+In `VendSys.Api/Auth/BasicAuthHandler.cs`, extend `AuthenticationHandler<AuthenticationSchemeOptions>`. In `HandleAuthenticateAsync`, read the `Authorization` header, verify the scheme is `"Basic"`, base64-decode the credentials, split on the first `:`, and compare against `BasicAuth:Username` and `BasicAuth:Password` from `IConfiguration`. Return `AuthenticateResult.Fail(...)` for any mismatch. Override `HandleChallengeAsync` to add the `WWW-Authenticate: Basic realm="VendSys"` header before the 401 response. Register the scheme and `AddAuthorization()` in `Program.cs`.
 
 **Acceptance Criteria:**
 - `POST /vdi-dex` with correct credentials returns the endpoint's status (200 or 400), not 401
@@ -168,7 +168,7 @@ In `VenDex.Api/Auth/BasicAuthHandler.cs`, extend `AuthenticationHandler<Authenti
 **Title:** Implement `GlobalExceptionMiddleware` that returns consistent JSON error responses
 
 **Description:**  
-In `VenDex.Api/Middleware/GlobalExceptionMiddleware.cs`, wrap `next(context)` in a try/catch. Catch `InvalidOperationException` (DEX parse failures) → 400 with `{ "error": message }`. Catch all other exceptions → 500 with `{ "error": "An unexpected error occurred.", "traceId": "..." }`. Register the middleware as the second item in the pipeline (after Serilog, before auth). Log the exception using the injected `ILogger` before writing the response.
+In `VendSys.Api/Middleware/GlobalExceptionMiddleware.cs`, wrap `next(context)` in a try/catch. Catch `InvalidOperationException` (DEX parse failures) → 400 with `{ "error": message }`. Catch all other exceptions → 500 with `{ "error": "An unexpected error occurred.", "traceId": "..." }`. Register the middleware as the second item in the pipeline (after Serilog, before auth). Log the exception using the injected `ILogger` before writing the response.
 
 **Acceptance Criteria:**
 - Submitting a DEX file missing a required segment returns 400 with a descriptive `error` field
@@ -202,13 +202,13 @@ Replace the default ASP.NET Core logger with Serilog in `Program.cs` using `UseS
 
 ## Feature 11 — Dockerfile and docker-compose for the API
 
-**Title:** Create a multi-stage `Dockerfile` for `VenDex.Api` and a `docker-compose.yml`
+**Title:** Create a multi-stage `Dockerfile` for `VendSys.Api` and a `docker-compose.yml`
 
 **Description:**  
-Add a `Dockerfile` to `src/VenDex.Api/` using a two-stage build: SDK stage for restore and publish; ASP.NET runtime stage for the final image. Expose port 8080. Add `docker-compose.yml` at the solution root with a single `vendex-api` service. Mount `./logs` to `/app/logs`. Override the connection string via environment variable to use `host.docker.internal` for the LocalDB on the host. Document the Docker startup steps in a comment block at the top of `docker-compose.yml`.
+Add a `Dockerfile` to `src/VendSys.Api/` using a two-stage build: SDK stage for restore and publish; ASP.NET runtime stage for the final image. Expose port 8080. Add `docker-compose.yml` at the solution root with a single `VendSys-api` service. Mount `./logs` to `/app/logs`. Override the connection string via environment variable to use `host.docker.internal` for the LocalDB on the host. Document the Docker startup steps in a comment block at the top of `docker-compose.yml`.
 
 **Acceptance Criteria:**
-- `docker build -f src/VenDex.Api/Dockerfile -t vendex-api .` completes without errors
+- `docker build -f src/VendSys.Api/Dockerfile -t VendSys-api .` completes without errors
 - `docker-compose up` starts the API container and it responds to `GET /` (or health probe) on port 8080
 - `POST /vdi-dex` from `curl` or Postman to `http://localhost:8080/vdi-dex` reaches the endpoint
 - Log files appear in `./logs/` on the host after a request
@@ -227,7 +227,7 @@ Add a `Dockerfile` to `src/VenDex.Api/` using a two-stage build: SDK stage for r
 Implement all test cases defined in `testing-strategy.md` sections 4.1, 4.2, and 4.3. Use NSubstitute for mocking. DEX sample strings for parser tests are embedded as string constants in the test project (copied from `/Docs/DEX Machine A.txt` and `/Docs/DEX Machine B.txt`). Auth handler tests use a `TestServer`. Repository tests verify SP call parameters via a custom interceptor or a thin wrapper interface.
 
 **Acceptance Criteria:**
-- All tests in `tests/VenDex.Tests/` pass: `dotnet test tests/VenDex.Tests/`
+- All tests in `tests/VendSys.Tests/` pass: `dotnet test tests/VendSys.Tests/`
 - Parser tests: 14 cases — all pass
 - Auth handler tests: 7 cases — all pass
 - Repository tests: 12 cases — all pass
@@ -240,7 +240,7 @@ Implement all test cases defined in `testing-strategy.md` sections 4.1, 4.2, and
 
 ## Feature 13 — MAUI Project Setup and DI (MauiProgram.cs)
 
-**Title:** Scaffold `VenDex.Maui`, configure `MauiProgram.cs` with all service registrations and Polly
+**Title:** Scaffold `VendSys.Maui`, configure `MauiProgram.cs` with all service registrations and Polly
 
 **Description:**  
 Create the MAUI project targeting Windows, Android, and iOS. Add `CommunityToolkit.Maui`, `CommunityToolkit.Mvvm`, and `Microsoft.Extensions.Http.Polly`. In `MauiProgram.cs`, register `IDexFileService`, `IApiService`, `MainViewModel`, `MainPage`, and the named `HttpClient` with the Polly retry policy (3 retries, exponential backoff). Create `ApiConstants.cs` with all string constants. Verify the app launches on Windows without crashing.
@@ -262,7 +262,7 @@ Create the MAUI project targeting Windows, Android, and iOS. Add `CommunityToolk
 **Title:** Embed the two DEX sample files as `EmbeddedResource` and implement `DexFileService`
 
 **Description:**  
-Copy `DEX Machine A.txt` and `DEX Machine B.txt` from `/Docs/` to `src/VenDex.Maui/Resources/Raw/` as `MachineA.txt` and `MachineB.txt`. Mark both as `EmbeddedResource` in the `.csproj` with explicit `LogicalName` values. Implement `DexFileService` to load the correct file via `Assembly.GetManifestResourceStream()`. Throw `InvalidOperationException` with a clear message if the resource key is not found.
+Copy `DEX Machine A.txt` and `DEX Machine B.txt` from `/Docs/` to `src/VendSys.Maui/Resources/Raw/` as `MachineA.txt` and `MachineB.txt`. Mark both as `EmbeddedResource` in the `.csproj` with explicit `LogicalName` values. Implement `DexFileService` to load the correct file via `Assembly.GetManifestResourceStream()`. Throw `InvalidOperationException` with a clear message if the resource key is not found.
 
 **Acceptance Criteria:**
 - `Assembly.GetExecutingAssembly().GetManifestResourceNames()` lists both resource keys
@@ -345,7 +345,7 @@ Implement `MainPage.xaml` as a `ContentPage` with a `VerticalStackLayout` (paddi
 Implement all test cases defined in `testing-strategy.md` sections 5.1 and 5.2. Use NSubstitute for `IApiService` and `IDexFileService`. For `ApiService` tests, inject a `MockHttpMessageHandler` to capture outgoing requests and return controlled responses. Include Polly retry tests by making the mock return 503 a configurable number of times before returning 200.
 
 **Acceptance Criteria:**
-- All tests in `tests/VenDex.Maui.Tests/` pass: `dotnet test tests/VenDex.Maui.Tests/`
+- All tests in `tests/VendSys.Maui.Tests/` pass: `dotnet test tests/VendSys.Maui.Tests/`
 - `MainViewModelTests`: 13 cases — all pass
 - `ApiServiceTests`: 11 cases — all pass
 - No test relies on a real HTTP server or file system

@@ -1,4 +1,4 @@
-# VenDex Challenge
+# VendSys Challenge
 
 A full-stack system for receiving, parsing, and persisting DEX vending machine data. Built with ASP.NET Core 9 Minimal API, SQL Server, and .NET MAUI.
 
@@ -20,7 +20,7 @@ A full-stack system for receiving, parsing, and persisting DEX vending machine d
 
 ## 1. Project Overview
 
-The VenDex system receives DEX (Data Exchange) files from vending machines via a .NET MAUI desktop/mobile app and stores structured sales data in a SQL Server database through a secured REST API.
+The VendSys system receives DEX (Data Exchange) files from vending machines via a .NET MAUI desktop/mobile app and stores structured sales data in a SQL Server database through a secured REST API.
 
 **Flow:**
 
@@ -67,7 +67,7 @@ dotnet tool install --global dotnet-ef
 ## 3. Solution Structure
 
 ```
-VenDexChallenge/
+VendSysChallenge/
 ├── src/
 │   ├── Backend/
 │   │   ├── VendSys.Domain/           # Entities (no framework dependencies)
@@ -92,7 +92,7 @@ VenDexChallenge/
 
 ### 4.1 Apply Migrations
 
-From the repository root, run both EF Core migrations to create the `VenDex` database, both tables, and the three stored procedures:
+From the repository root, run both EF Core migrations to create the `VendSys` database, both tables, and the three stored procedures:
 
 ```bash
 dotnet ef database update \
@@ -109,7 +109,7 @@ The default connection string targets `(localdb)\MSSQLLocalDB` and is configured
 ### 4.2 Verify
 
 Connect to `(localdb)\MSSQLLocalDB` in SSMS or Visual Studio SQL Server Object Explorer and confirm:
-- Database `VenDex` exists
+- Database `VendSys` exists
 - Tables `dbo.DEXMeter` and `dbo.DEXLaneMeter` exist
 - Stored procedures `dbo.SaveDEXMeter`, `dbo.SaveDEXLaneMeter`, and `dbo.ClearAllData` exist
 
@@ -177,7 +177,7 @@ Returns `204 No Content` on success.
 Edit `docker-compose.yml` and replace `<YourPassword>` with your SQL Server `sa` password:
 
 ```yaml
-ConnectionStrings__DefaultConnection: "Server=host.docker.internal,1433;Database=VenDex;User Id=sa;Password=<YourPassword>;MultipleActiveResultSets=False;TrustServerCertificate=True;"
+ConnectionStrings__DefaultConnection: "Server=host.docker.internal,1433;Database=VendSys;User Id=sa;Password=<YourPassword>;MultipleActiveResultSets=False;TrustServerCertificate=True;"
 ```
 
 `host.docker.internal` resolves to the host machine from inside the container, allowing the Linux container to reach SQL Server running on Windows.
@@ -190,7 +190,7 @@ Before starting Docker, apply migrations to the TCP-accessible SQL Server instan
 dotnet ef database update \
   --project src/Backend/VendSys.Infrastructure \
   --startup-project src/Backend/VendSys.Api \
-  --connection "Server=localhost,1433;Database=VenDex;User Id=sa;Password=<YourPassword>;TrustServerCertificate=True;"
+  --connection "Server=localhost,1433;Database=VendSys;User Id=sa;Password=<YourPassword>;TrustServerCertificate=True;"
 ```
 
 ### 6.3 Build and Run
@@ -211,10 +211,10 @@ curl -X POST "http://localhost:8080/vdi-dex?machine=A" \
 ### 6.4 Manual Docker Build
 
 ```bash
-docker build -f src/Backend/VendSys.Api/Dockerfile -t vendex-api .
+docker build -f src/Backend/VendSys.Api/Dockerfile -t VendSys-api .
 docker run -p 8080:8080 \
-  -e "ConnectionStrings__DefaultConnection=Server=host.docker.internal,1433;Database=VenDex;User Id=sa;Password=<YourPassword>;TrustServerCertificate=True;" \
-  vendex-api
+  -e "ConnectionStrings__DefaultConnection=Server=host.docker.internal,1433;Database=VendSys;User Id=sa;Password=<YourPassword>;TrustServerCertificate=True;" \
+  VendSys-api
 ```
 
 ---

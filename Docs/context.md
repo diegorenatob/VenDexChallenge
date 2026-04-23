@@ -1,4 +1,4 @@
-# VenDex Challenge — Project Context
+# VendSys Challenge — Project Context
 
 ## 1. Project Overview
 
@@ -212,7 +212,7 @@ These rules apply to **every C# file** in the project without exception.
 ### Example skeleton
 
 ```csharp
-namespace VenDex.Api.Parsing;
+namespace VendSys.Api.Parsing;
 
 /// <summary>
 /// Parses raw DEX file text into structured data models.

@@ -1,8 +1,8 @@
-# VenDex Challenge — MAUI Application Architecture
+# VendSys Challenge — MAUI Application Architecture
 
 ## 1. Project Overview
 
-**Project name:** `VenDex.Maui`  
+**Project name:** `VendSys.Maui`  
 **Target framework:** `net9.0-windows10.0.19041.0;net9.0-android;net9.0-ios`  
 **Pattern:** MVVM (Model–View–ViewModel)  
 **DI container:** `Microsoft.Extensions.DependencyInjection` (built into MAUI host)  
@@ -14,7 +14,7 @@
 ## 2. Full Folder and File Structure
 
 ```
-src/VenDex.Maui/
+src/VendSys.Maui/
 │
 ├── Constants/
 │   └── ApiConstants.cs              ← base URL, endpoint path, machine identifiers
@@ -51,32 +51,32 @@ src/VenDex.Maui/
 ├── AppShell.xaml
 ├── AppShell.xaml.cs
 ├── MauiProgram.cs                   ← composition root / DI registration
-└── VenDex.Maui.csproj
+└── VendSys.Maui.csproj
 ```
 
 ### 2.1 Test Project
 
 ```
-tests/VenDex.Maui.Tests/
+tests/VendSys.Maui.Tests/
 ├── ViewModels/
 │   └── MainViewModelTests.cs       ← command behaviour, IsBusy state, error handling
 ├── Services/
 │   └── ApiServiceTests.cs          ← mocked HttpMessageHandler, auth header, Polly retry
-└── VenDex.Maui.Tests.csproj
+└── VendSys.Maui.Tests.csproj
 ```
 
 ---
 
-## 3. Project File Configuration (VenDex.Maui.csproj highlights)
+## 3. Project File Configuration (VendSys.Maui.csproj highlights)
 
 ```xml
 <ItemGroup>
   <!-- DEX files compiled into the assembly as embedded resources -->
   <EmbeddedResource Include="Resources\Raw\MachineA.txt">
-    <LogicalName>VenDex.Maui.Resources.Raw.MachineA.txt</LogicalName>
+    <LogicalName>VendSys.Maui.Resources.Raw.MachineA.txt</LogicalName>
   </EmbeddedResource>
   <EmbeddedResource Include="Resources\Raw\MachineB.txt">
-    <LogicalName>VenDex.Maui.Resources.Raw.MachineB.txt</LogicalName>
+    <LogicalName>VendSys.Maui.Resources.Raw.MachineB.txt</LogicalName>
   </EmbeddedResource>
 </ItemGroup>
 
@@ -99,11 +99,11 @@ tests/VenDex.Maui.Tests/
 All API-related strings live here as `public const string`. No string literals appear anywhere else in the codebase.
 
 ```
-namespace VenDex.Maui.Constants;
+namespace VendSys.Maui.Constants;
 
 public static class ApiConstants
 {
-    public const string HttpClientName  = "VenDexApiClient";
+    public const string HttpClientName  = "VendSysApiClient";
     public const string BaseUrl         = "http://10.0.2.2:8080";     // Android emulator loopback
     public const string DexEndpoint     = "/vdi-dex";
     public const string MachineParamKey = "machine";
@@ -197,8 +197,8 @@ public interface IDexFileService
 ```
 Assembly  assembly    = Assembly.GetExecutingAssembly();
 string    resourceKey = machine == ApiConstants.MachineA
-                          ? "VenDex.Maui.Resources.Raw.MachineA.txt"
-                          : "VenDex.Maui.Resources.Raw.MachineB.txt";
+                          ? "VendSys.Maui.Resources.Raw.MachineA.txt"
+                          : "VendSys.Maui.Resources.Raw.MachineB.txt";
 
 using Stream stream = assembly.GetManifestResourceStream(resourceKey)
     ?? throw new InvalidOperationException($"Embedded resource '{resourceKey}' not found.");
@@ -371,7 +371,7 @@ ContentPage
         └── VerticalStackLayout  (Padding="16", Spacing="24")
               │
               ├── Label            ← App title / heading
-              │     Text="VenDex DEX Uploader"
+              │     Text="VendSys DEX Uploader"
               │     Style="{StaticResource HeadlineStyle}"
               │
               ├── Label            ← Subtitle / instructions
@@ -464,7 +464,7 @@ Build time:
 
 Runtime (DexFileService.LoadDexFile("A")):
   1. Assembly.GetExecutingAssembly()
-  2. GetManifestResourceStream("VenDex.Maui.Resources.Raw.MachineA.txt")
+  2. GetManifestResourceStream("VendSys.Maui.Resources.Raw.MachineA.txt")
   3. StreamReader.ReadToEnd()  →  returns full DEX string
 
 If resource key mismatch (wrong LogicalName):
@@ -504,7 +504,7 @@ onRetry callback:   Debug.WriteLine for diagnostic output during development
 
 ---
 
-## 11. Unit Test Plan — VenDex.Maui.Tests
+## 11. Unit Test Plan — VendSys.Maui.Tests
 
 ### Packages
 - `NUnit` 4.x

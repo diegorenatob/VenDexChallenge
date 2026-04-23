@@ -1,17 +1,17 @@
-# VenDex Challenge — Architecture Design
+# VendSys Challenge — Architecture Design
 
 ## 1. Solution Overview
 
-**Solution file:** `VenDexChallenge.sln`
+**Solution file:** `VendSysChallenge.sln`
 
 Six projects following Clean Architecture. Dependency arrows point inward — outer layers depend on inner layers, never the reverse.
 
 ```
 Domain  ←  Application  ←  Infrastructure  ←  API
                                     ↑
-                              VenDex.Tests
+                              VendSys.Tests
                                     ↑
-                              VenDex.Maui (standalone, HTTP only)
+                              VendSys.Maui (standalone, HTTP only)
 ```
 
 ---
@@ -19,17 +19,17 @@ Domain  ←  Application  ←  Infrastructure  ←  API
 ## 2. Full Folder Structure
 
 ```
-VenDexChallenge/
-├── VenDexChallenge.sln
+VendSysChallenge/
+├── VendSysChallenge.sln
 │
 ├── src/
-│   ├── VenDex.Domain/
+│   ├── VendSys.Domain/
 │   │   ├── Entities/
 │   │   │   ├── DexMeter.cs
 │   │   │   └── DexLaneMeter.cs
-│   │   └── VenDex.Domain.csproj
+│   │   └── VendSys.Domain.csproj
 │   │
-│   ├── VenDex.Application/
+│   ├── VendSys.Application/
 │   │   ├── DTOs/
 │   │   │   ├── DexMeterDto.cs
 │   │   │   └── DexLaneMeterDto.cs
@@ -38,11 +38,11 @@ VenDexChallenge/
 │   │   │   └── IDexRepository.cs
 │   │   ├── UseCases/
 │   │   │   └── ProcessDexFileUseCase.cs
-│   │   └── VenDex.Application.csproj
+│   │   └── VendSys.Application.csproj
 │   │
-│   ├── VenDex.Infrastructure/
+│   ├── VendSys.Infrastructure/
 │   │   ├── Data/
-│   │   │   ├── VenDexDbContext.cs
+│   │   │   ├── VendSysDbContext.cs
 │   │   │   ├── Configurations/
 │   │   │   │   ├── DexMeterConfiguration.cs
 │   │   │   │   └── DexLaneMeterConfiguration.cs
@@ -51,9 +51,9 @@ VenDexChallenge/
 │   │   │   └── DexRepository.cs
 │   │   ├── Parsing/
 │   │   │   └── DexParserService.cs
-│   │   └── VenDex.Infrastructure.csproj
+│   │   └── VendSys.Infrastructure.csproj
 │   │
-│   ├── VenDex.Api/
+│   ├── VendSys.Api/
 │   │   ├── Auth/
 │   │   │   └── BasicAuthHandler.cs
 │   │   ├── Endpoints/
@@ -64,9 +64,9 @@ VenDexChallenge/
 │   │   ├── appsettings.Development.json
 │   │   ├── Program.cs
 │   │   ├── Dockerfile
-│   │   └── VenDex.Api.csproj
+│   │   └── VendSys.Api.csproj
 │   │
-│   └── VenDex.Maui/
+│   └── VendSys.Maui/
 │       ├── Services/
 │       │   └── DexApiService.cs
 │       ├── MainPage.xaml
@@ -74,17 +74,17 @@ VenDexChallenge/
 │       ├── App.xaml
 │       ├── App.xaml.cs
 │       ├── MauiProgram.cs
-│       └── VenDex.Maui.csproj
+│       └── VendSys.Maui.csproj
 │
 ├── tests/
-│   └── VenDex.Tests/
+│   └── VendSys.Tests/
 │       ├── Parsing/
 │       │   └── DexParserServiceTests.cs
 │       ├── Auth/
 │       │   └── BasicAuthHandlerTests.cs
 │       ├── Repository/
 │       │   └── DexRepositoryTests.cs
-│       └── VenDex.Tests.csproj
+│       └── VendSys.Tests.csproj
 │
 ├── docker-compose.yml
 └── Docs/
@@ -99,14 +99,14 @@ VenDexChallenge/
 
 ## 3. Layer Responsibilities
 
-### 3.1 VenDex.Domain
+### 3.1 VendSys.Domain
 - **No external dependencies** (no NuGet packages beyond .NET runtime).
 - Contains the two core entities: `DexMeter` and `DexLaneMeter`.
 - Entities are plain C# classes with properties only — no behaviour, no annotations.
 - EF Core data annotations are not used here; all schema configuration lives in Infrastructure.
 
-### 3.2 VenDex.Application
-- **Depends only on VenDex.Domain.**
+### 3.2 VendSys.Application
+- **Depends only on VendSys.Domain.**
 - Defines the contracts (interfaces) that Infrastructure must implement:
   - `IDexParserService` — parses a raw DEX string into DTOs.
   - `IDexRepository` — persists DEX data via stored procedures.
@@ -117,34 +117,34 @@ VenDexChallenge/
   3. Calls `IDexRepository.SaveDexLaneMeterAsync` for each lane record.
 - No framework references (no ASP.NET, no EF Core, no Serilog).
 
-### 3.3 VenDex.Infrastructure
-- **Depends on VenDex.Application and VenDex.Domain.**
+### 3.3 VendSys.Infrastructure
+- **Depends on VendSys.Application and VendSys.Domain.**
 - Implements `IDexParserService` as `DexParserService`.
 - Implements `IDexRepository` as `DexRepository`.
-- Contains `VenDexDbContext` (EF Core `DbContext`):
+- Contains `VendSysDbContext` (EF Core `DbContext`):
   - Exposes `DbSet<DexMeter>` and `DbSet<DexLaneMeter>` (read queries only).
   - Entity configurations via `IEntityTypeConfiguration<T>` (table names, column types, constraints, FK).
   - EF Core migrations define the schema and the two stored procedures as SQL in `Up()`/`Down()`.
 - `DexRepository` calls stored procedures exclusively via `context.Database.ExecuteSqlRawAsync()` with `SqlParameter` objects (including `OUTPUT` direction for returning the new `DexMeterId`).
 - NuGet packages: `Microsoft.EntityFrameworkCore`, `Microsoft.EntityFrameworkCore.SqlServer`, `Microsoft.EntityFrameworkCore.Tools`.
 
-### 3.4 VenDex.Api
-- **Depends on VenDex.Application (interfaces/use cases) and VenDex.Infrastructure (DI registration).**
+### 3.4 VendSys.Api
+- **Depends on VendSys.Application (interfaces/use cases) and VendSys.Infrastructure (DI registration).**
 - `Program.cs` is the composition root — registers all services, middleware, and endpoints.
 - `BasicAuthHandler` implements `AuthenticationHandler<AuthenticationSchemeOptions>`, reading credentials from `appsettings.json` via `IConfiguration`.
 - `GlobalExceptionMiddleware` catches all unhandled exceptions and returns a consistent JSON body.
 - `DexEndpoints.cs` maps `POST /vdi-dex`, reads the machine query param and raw body, then delegates to `ProcessDexFileUseCase`.
 - Serilog is configured in `Program.cs` with console and rolling-file sinks.
 
-### 3.5 VenDex.Maui
+### 3.5 VendSys.Maui
 - **Standalone — no dependency on any other project in this solution.**
 - Communicates with the API exclusively over HTTP.
 - `DexApiService` wraps `HttpClient`, sets the `Authorization: Basic` header, and POSTs the DEX text.
 - Two DEX file strings are stored as string constants (not embedded resources, per challenge brief).
 - `MainPage` binds two buttons to `DexApiService.SendAsync("A")` and `DexApiService.SendAsync("B")`.
 
-### 3.6 VenDex.Tests
-- **Depends on VenDex.Application and VenDex.Infrastructure.**
+### 3.6 VendSys.Tests
+- **Depends on VendSys.Application and VendSys.Infrastructure.**
 - NUnit 4 + NSubstitute (interface mocking — no concrete DB required).
 - Three test classes covering the three core testable units.
 
@@ -154,12 +154,12 @@ VenDexChallenge/
 
 ```mermaid
 graph TD
-    MAUI["VenDex.Maui<br/>(MAUI App)"]
-    API["VenDex.Api<br/>(Minimal API)"]
-    APP["VenDex.Application<br/>(Use Cases + Interfaces)"]
-    INF["VenDex.Infrastructure<br/>(EF Core + Parsing + Repos)"]
-    DOM["VenDex.Domain<br/>(Entities)"]
-    TST["VenDex.Tests<br/>(NUnit)"]
+    MAUI["VendSys.Maui<br/>(MAUI App)"]
+    API["VendSys.Api<br/>(Minimal API)"]
+    APP["VendSys.Application<br/>(Use Cases + Interfaces)"]
+    INF["VendSys.Infrastructure<br/>(EF Core + Parsing + Repos)"]
+    DOM["VendSys.Domain<br/>(Entities)"]
+    TST["VendSys.Tests<br/>(NUnit)"]
 
     MAUI -->|"HTTP POST /vdi-dex"| API
     API -->|"calls use case via"| APP
@@ -335,7 +335,7 @@ with `Content-Type: application/json` and status `500`. Known validation errors 
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=VenDex;Trusted_Connection=True;MultipleActiveResultSets=False;"
+    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=VendSys;Trusted_Connection=True;MultipleActiveResultSets=False;"
   },
   "BasicAuth": {
     "Username": "vendsys",
@@ -371,7 +371,7 @@ with `Content-Type: application/json` and status `500`. Known validation errors 
 ## 9. Docker Strategy
 
 ### What runs in Docker
-Only **VenDex.Api**. SQL Server LocalDB is a Windows-only component that cannot run in a Linux container. The database remains on the developer's machine for local development.
+Only **VendSys.Api**. SQL Server LocalDB is a Windows-only component that cannot run in a Linux container. The database remains on the developer's machine for local development.
 
 ### Dockerfile (multi-stage)
 
@@ -379,23 +379,23 @@ Only **VenDex.Api**. SQL Server LocalDB is a Windows-only component that cannot 
 Stage 1 — build:   mcr.microsoft.com/dotnet/sdk:9.0
   COPY solution + src projects
   dotnet restore
-  dotnet publish VenDex.Api → /app/publish
+  dotnet publish VendSys.Api → /app/publish
 
 Stage 2 — runtime: mcr.microsoft.com/dotnet/aspnet:9.0
   COPY --from=build /app/publish .
   EXPOSE 8080
   ENV ASPNETCORE_URLS=http://+:8080
-  ENTRYPOINT ["dotnet", "VenDex.Api.dll"]
+  ENTRYPOINT ["dotnet", "VendSys.Api.dll"]
 ```
 
 ### docker-compose.yml
 
 ```yaml
 services:
-  vendex-api:
+  VendSys-api:
     build:
       context: .
-      dockerfile: src/VenDex.Api/Dockerfile
+      dockerfile: src/VendSys.Api/Dockerfile
     ports:
       - "8080:8080"
     environment:
@@ -412,7 +412,7 @@ services:
 
 ## 10. Unit Tests
 
-### VenDex.Tests.csproj packages
+### VendSys.Tests.csproj packages
 - `NUnit` (4.x)
 - `NUnit3TestAdapter`
 - `Microsoft.NET.Test.Sdk`
@@ -448,7 +448,7 @@ Tests `BasicAuthHandler` using `TestServer` / `WebApplicationFactory` or direct 
 | `NonBasicScheme_Returns401` | Bearer token → 401 |
 
 ### 10.3 DexRepositoryTests
-Tests `DexRepository` with a mocked `VenDexDbContext` (NSubstitute on the `Database` facade) to verify correct SQL and parameters are passed.
+Tests `DexRepository` with a mocked `VendSysDbContext` (NSubstitute on the `Database` facade) to verify correct SQL and parameters are passed.
 
 | Test | Verifies |
 |------|----------|

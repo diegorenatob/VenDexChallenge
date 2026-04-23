@@ -1,6 +1,6 @@
 # AI-Assisted Development — Conversation Export
 
-**Project:** VenDex Challenge  
+**Project:** VendSys Challenge  
 **Assistant:** Claude Code (claude-sonnet-4-6) via Anthropic Claude Agent SDK  
 **Sessions:** Multiple (context was compacted once mid-project)  
 **Total features implemented:** 19 (Features 1–18 + optional Clear Tables)
@@ -9,7 +9,7 @@
 
 ## 1. Summary
 
-This document captures the full AI-assisted development process for the VenDex Challenge — a full-stack system built with ASP.NET Core 9 Minimal API, SQL Server, and .NET MAUI. The project was implemented end-to-end using Claude Code as the primary development tool, with the developer providing requirements and corrections through natural language prompts.
+This document captures the full AI-assisted development process for the VendSys Challenge — a full-stack system built with ASP.NET Core 9 Minimal API, SQL Server, and .NET MAUI. The project was implemented end-to-end using Claude Code as the primary development tool, with the developer providing requirements and corrections through natural language prompts.
 
 The conversation spanned all 19 backlog features: from solution scaffolding through EF Core migrations, stored procedures, DEX parsing, REST API, authentication, logging, Docker, and a complete .NET MAUI client with MVVM, embedded resources, Polly retry, and a full XAML UI.
 
@@ -45,7 +45,7 @@ MAUI App → POST /vdi-dex?machine=A (Basic Auth) → ASP.NET Core API → SQL S
 
 **What was built:**
 - `VendSys.sln` with six projects: `VendSys.Domain`, `VendSys.Application`, `VendSys.Infrastructure`, `VendSys.Api`, `VendSys.Maui`, plus test projects
-- EF Core `VenDexDbContext` with `DexMeter` and `DexLaneMeter` entity configurations
+- EF Core `VendSysDbContext` with `DexMeter` and `DexLaneMeter` entity configurations
 - `InitialCreate` migration — two tables with PK, FK, and composite unique index on `(Machine, DEXDateTime)`
 - `AddStoredProcedures` migration with three SPs via `migrationBuilder.Sql()`:
 
@@ -105,7 +105,7 @@ return (int)idOutParam.Value;
 - `BasicAuthHandler` extending `AuthenticationHandler<AuthenticationSchemeOptions>`:
   - Reads `Authorization: Basic <base64>` header
   - Decodes and compares against `appsettings.json` → `BasicAuth:Username/Password`
-  - Returns `WWW-Authenticate: Basic realm="VenDex"` on 401
+  - Returns `WWW-Authenticate: Basic realm="VendSys"` on 401
 - `GlobalExceptionMiddleware`:
   - `InvalidOperationException` → 400 with `{ "error": message }`
   - All other exceptions → 500 with `{ "error": "...", "traceId": "..." }`

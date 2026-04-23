@@ -69,7 +69,7 @@ I also reviewed the database schema to ensure the tables were correctly indexed 
 ## Source Code and Additional Projects
 
 The complete solution is publicly available on my personal GitHub repository:
-[github.com/diegorenatob/VenDexChallenge](https://github.com/diegorenatob/VenDexChallenge)
+[github.com/diegorenatob/VendSysChallenge](https://github.com/diegorenatob/VendSysChallenge)
 
 The repository includes the full commit history, which reflects how the solution was built and refined incrementally — from initial scaffolding through architecture documents, feature implementation, and final optimisations. Reviewers are welcome to browse the commit log as a transparent record of the AI-assisted development process described in this document.
 

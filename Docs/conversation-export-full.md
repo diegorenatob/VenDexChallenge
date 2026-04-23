@@ -1,4 +1,4 @@
-# Conversación Claude Code - VenDexChallenge
+# Conversación Claude Code - VendSysChallenge
 
 **Sesión:** c470f272-c913-47d2-b8b2-b74618962025
 **Fecha:** 22-23 de Abril 2026
@@ -162,7 +162,7 @@ Now I have everything needed. Let me write the full architecture document.
 
 [Docs/architecture.md](Docs/architecture.md) is written and committed. Here's what it covers:
 
-**Solution:** 6 projects — `VenDex.Domain`, `VenDex.Application`, `VenDex.Infrastructure`, `VenDex.Api`, `VenDex.Maui`, `VenDex.Tests`.
+**Solution:** 6 projects — `VendSys.Domain`, `VendSys.Application`, `VendSys.Infrastructure`, `VendSys.Api`, `VendSys.Maui`, `VendSys.Tests`.
 
 **Key design decisions captured:**
 
@@ -222,7 +222,7 @@ Include in maui-architecture.md:
 
 [Docs/maui-architecture.md](Docs/maui-architecture.md) is written and committed. Here's what it covers:
 
-**Structure:** `Constants/`, `Models/`, `Services/`, `ViewModels/`, `Views/`, `Resources/Raw/` for embedded DEX files — plus a `VenDex.Maui.Tests` project.
+**Structure:** `Constants/`, `Models/`, `Services/`, `ViewModels/`, `Views/`, `Resources/Raw/` for embedded DEX files — plus a `VendSys.Maui.Tests` project.
 
 **Key design decisions:**
 
@@ -589,7 +589,7 @@ Database created and migration applied successfully. Feature 2 is complete.
 |------|--------|
 | [VendSys.Domain/DexMeter.cs](src/Backend/VendSys.Domain/DexMeter.cs) | Created — domain entity |
 | [VendSys.Domain/DexLaneMeter.cs](src/Backend/VendSys.Domain/DexLaneMeter.cs) | Created — domain entity |
-| [VendSys.Infrastructure/Data/VenDexDbContext.cs](src/Backend/VendSys.Infrastructure/Data/VenDexDbContext.cs) | Created — EF Core context |
+| [VendSys.Infrastructure/Data/VendSysDbContext.cs](src/Backend/VendSys.Infrastructure/Data/VendSysDbContext.cs) | Created — EF Core context |
 | [VendSys.Infrastructure/Data/Configurations/DexMeterConfiguration.cs](src/Backend/VendSys.Infrastructure/Data/Configurations/DexMeterConfiguration.cs) | Created — entity configuration |
 | [VendSys.Infrastructure/Data/Configurations/DexLaneMeterConfiguration.cs](src/Backend/VendSys.Infrastructure/Data/Configurations/DexLaneMeterConfiguration.cs) | Created — entity configuration |
 | [VendSys.Api/appsettings.json](src/Backend/VendSys.Api/appsettings.json) | Updated — connection string + BasicAuth section |
@@ -597,10 +597,10 @@ Database created and migration applied successfully. Feature 2 is complete.
 | `VendSys.Infrastructure/Migrations/` | Generated — `InitialCreate` migration |
 
 **Acceptance criteria met:**
-- `VenDexDbContext` registered with `AddDbContext<VenDexDbContext>` ✓
+- `VendSysDbContext` registered with `AddDbContext<VendSysDbContext>` ✓
 - Both entity configurations apply correct column types, PK, unique index, and FK with cascade delete ✓
 - `InitialCreate` migration created `DEXMeter` and `DEXLaneMeter` tables with correct DDL ✓
-- `dotnet ef database update` applied successfully — `VenDex` database created on LocalDB ✓
+- `dotnet ef database update` applied successfully — `VendSys` database created on LocalDB ✓
 - Build: **0 errors, 0 warnings** ✓
 
 Please commit when ready, then confirm to proceed to Feature 3 (Stored Procedures migration).
@@ -831,7 +831,7 @@ it looks greate, go to feature 8
 - No colon in decoded value → `Fail(...)` → 401 ✓
 - Wrong username or password → `Fail(...)` → 401 ✓
 - Valid credentials → `Success(ticket)` with `ClaimsPrincipal.Name = username` ✓
-- `HandleChallengeAsync` sets `WWW-Authenticate: Basic realm="VenDex"` before delegating to base ✓
+- `HandleChallengeAsync` sets `WWW-Authenticate: Basic realm="VendSys"` before delegating to base ✓
 - Credentials read from `appsettings.json` via `IOptionsMonitor<BasicAuthOptions>` — no hardcoded strings ✓
 - Build: **0 errors, 0 warnings** ✓
 
@@ -922,13 +922,13 @@ Feature 11 needs two files: a `Dockerfile` in the API project folder and a `dock
 | File | Action |
 |------|--------|
 | [src/Backend/VendSys.Api/Dockerfile](src/Backend/VendSys.Api/Dockerfile) | Created — two-stage build |
-| [docker-compose.yml](docker-compose.yml) | Created — single `vendex-api` service |
+| [docker-compose.yml](docker-compose.yml) | Created — single `VendSys-api` service |
 
 **Acceptance criteria met:**
 - Two-stage build: `sdk:9.0` for build, `aspnet:9.0` for runtime — SDK layer excluded from final image ✓
 - Project files copied first for layer-cached `dotnet restore` ✓
 - `EXPOSE 8080` (.NET 9 container default) ✓
-- Build command: `docker build -f src/Backend/VendSys.Api/Dockerfile -t vendex-api .` (context at solution root) ✓
+- Build command: `docker build -f src/Backend/VendSys.Api/Dockerfile -t VendSys-api .` (context at solution root) ✓
 - `./logs:/app/logs` volume mount ✓
 - `ConnectionStrings__DefaultConnection` overrides the connection string via environment variable ✓
 - `host.docker.internal` used as SQL Server host, with a comment explaining the LocalDB/Windows Auth limitation ✓

@@ -1,9 +1,9 @@
-# VenDex Challenge — Database Design
+# VendSys Challenge — Database Design
 
 ## 1. Database Target
 
 - **Engine:** SQL Server LocalDB (`(localdb)\MSSQLLocalDB`) for local development
-- **Database name:** `VenDex`
+- **Database name:** `VendSys`
 - **Schema management:** EF Core 9 migrations (code-first)
 - **Write path:** stored procedures only — no direct EF inserts or updates on these tables
 
@@ -94,13 +94,13 @@ One `DEXMeter` record is the parent for all lane records parsed from the same DE
 
 ## 5. EF Core Entity Configurations
 
-Entities in `VenDex.Domain` carry no EF Core attributes. All schema configuration is applied via `IEntityTypeConfiguration<T>` classes in `VenDex.Infrastructure`.
+Entities in `VendSys.Domain` carry no EF Core attributes. All schema configuration is applied via `IEntityTypeConfiguration<T>` classes in `VendSys.Infrastructure`.
 
 ### 5.1 DexMeterConfiguration
 
 ```csharp
-// VenDex.Infrastructure/Data/Configurations/DexMeterConfiguration.cs
-namespace VenDex.Infrastructure.Data.Configurations;
+// VendSys.Infrastructure/Data/Configurations/DexMeterConfiguration.cs
+namespace VendSys.Infrastructure.Data.Configurations;
 
 internal sealed class DexMeterConfiguration : IEntityTypeConfiguration<DexMeter>
 {
@@ -139,8 +139,8 @@ internal sealed class DexMeterConfiguration : IEntityTypeConfiguration<DexMeter>
 ### 5.2 DexLaneMeterConfiguration
 
 ```csharp
-// VenDex.Infrastructure/Data/Configurations/DexLaneMeterConfiguration.cs
-namespace VenDex.Infrastructure.Data.Configurations;
+// VendSys.Infrastructure/Data/Configurations/DexLaneMeterConfiguration.cs
+namespace VendSys.Infrastructure.Data.Configurations;
 
 internal sealed class DexLaneMeterConfiguration : IEntityTypeConfiguration<DexLaneMeter>
 {
@@ -308,7 +308,7 @@ public partial class AddStoredProcedures : Migration
 
 ```bash
 # From solution root
-dotnet ef database update --project src/VenDex.Infrastructure --startup-project src/VenDex.Api
+dotnet ef database update --project src/VendSys.Infrastructure --startup-project src/VendSys.Api
 ```
 
 This applies both migrations in sequence against the LocalDB instance, creating the database if it does not exist.
@@ -317,11 +317,11 @@ This applies both migrations in sequence against the LocalDB instance, creating 
 
 ## 8. Connection String
 
-Defined in `appsettings.json` under `VenDex.Api`:
+Defined in `appsettings.json` under `VendSys.Api`:
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=VenDex;Trusted_Connection=True;MultipleActiveResultSets=False;"
+  "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=VendSys;Trusted_Connection=True;MultipleActiveResultSets=False;"
 }
 ```
 

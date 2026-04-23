@@ -1,4 +1,4 @@
-# VenDex Challenge — Testing Strategy
+# VendSys Challenge — Testing Strategy
 
 ## 1. Scope
 
@@ -10,8 +10,8 @@ This document covers unit tests only. Integration tests, end-to-end tests, SQL S
 
 | Project | Type | Framework | Covers |
 |---------|------|-----------|--------|
-| `VenDex.Tests` | NUnit unit tests | `net9.0` | Backend: parser, auth, repository |
-| `VenDex.Maui.Tests` | NUnit unit tests | `net9.0` | MAUI: ViewModel, ApiService |
+| `VendSys.Tests` | NUnit unit tests | `net9.0` | Backend: parser, auth, repository |
+| `VendSys.Maui.Tests` | NUnit unit tests | `net9.0` | MAUI: ViewModel, ApiService |
 
 ---
 
@@ -24,18 +24,18 @@ This document covers unit tests only. Integration tests, end-to-end tests, SQL S
 <PackageReference Include="NSubstitute"                    Version="5.*" />
 ```
 
-`VenDex.Tests` additionally references:
+`VendSys.Tests` additionally references:
 ```xml
 <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.*" />
 ```
 
 ---
 
-## 4. Backend Tests — VenDex.Tests
+## 4. Backend Tests — VendSys.Tests
 
 ### 4.1 DexParserServiceTests
 
-**Location:** `tests/VenDex.Tests/Parsing/DexParserServiceTests.cs`  
+**Location:** `tests/VendSys.Tests/Parsing/DexParserServiceTests.cs`  
 **Class under test:** `DexParserService` (implements `IDexParserService`)  
 **Dependencies:** none — pure string parsing, no mocks needed  
 **Fixture setup:** Load the raw text of `DEX Machine A.txt` and `DEX Machine B.txt` as test string constants (copied from `/Docs`)
@@ -83,7 +83,7 @@ This document covers unit tests only. Integration tests, end-to-end tests, SQL S
 
 ### 4.2 BasicAuthHandlerTests
 
-**Location:** `tests/VenDex.Tests/Auth/BasicAuthHandlerTests.cs`  
+**Location:** `tests/VendSys.Tests/Auth/BasicAuthHandlerTests.cs`  
 **Class under test:** `BasicAuthHandler`  
 **Strategy:** Use `WebApplicationFactory<Program>` (or `TestServer`) to send real HTTP requests through the full middleware pipeline. The test host overrides `appsettings.json` with known credentials using `IConfiguration` in-memory provider.
 
@@ -101,22 +101,22 @@ TestServer configured with:
 | Test | Authorization Header | Expected Status | Expected Header |
 |------|---------------------|-----------------|-----------------|
 | `ValidCredentials_Returns200` | `Basic dGVzdHVzZXI6dGVzdHBhc3M=` | 200 | — |
-| `WrongPassword_Returns401` | `Basic dGVzdHVzZXI6d3Jvbmc=` (user:wrong) | 401 | `WWW-Authenticate: Basic realm="VenDex"` |
-| `WrongUsername_Returns401` | `Basic d3Jvbmc6dGVzdHBhc3M=` (wrong:pass) | 401 | `WWW-Authenticate: Basic realm="VenDex"` |
-| `MissingAuthHeader_Returns401` | *(no header)* | 401 | `WWW-Authenticate: Basic realm="VenDex"` |
-| `MalformedBase64_Returns401` | `Basic not-valid-base64!!!` | 401 | `WWW-Authenticate: Basic realm="VenDex"` |
-| `NonBasicScheme_Returns401` | `Bearer sometoken` | 401 | `WWW-Authenticate: Basic realm="VenDex"` |
-| `CredentialsMissingColon_Returns401` | `Basic dGVzdHVzZXI=` (no colon in decoded value) | 401 | `WWW-Authenticate: Basic realm="VenDex"` |
+| `WrongPassword_Returns401` | `Basic dGVzdHVzZXI6d3Jvbmc=` (user:wrong) | 401 | `WWW-Authenticate: Basic realm="VendSys"` |
+| `WrongUsername_Returns401` | `Basic d3Jvbmc6dGVzdHBhc3M=` (wrong:pass) | 401 | `WWW-Authenticate: Basic realm="VendSys"` |
+| `MissingAuthHeader_Returns401` | *(no header)* | 401 | `WWW-Authenticate: Basic realm="VendSys"` |
+| `MalformedBase64_Returns401` | `Basic not-valid-base64!!!` | 401 | `WWW-Authenticate: Basic realm="VendSys"` |
+| `NonBasicScheme_Returns401` | `Bearer sometoken` | 401 | `WWW-Authenticate: Basic realm="VendSys"` |
+| `CredentialsMissingColon_Returns401` | `Basic dGVzdHVzZXI=` (no colon in decoded value) | 401 | `WWW-Authenticate: Basic realm="VendSys"` |
 
 ---
 
 ### 4.3 DexRepositoryTests
 
-**Location:** `tests/VenDex.Tests/Repository/DexRepositoryTests.cs`  
+**Location:** `tests/VendSys.Tests/Repository/DexRepositoryTests.cs`  
 **Class under test:** `DexRepository`  
-**Strategy:** NSubstitute mock of `VenDexDbContext` (specifically its `Database` property and `ExecuteSqlRawAsync` call). Verifies that the correct SP name and parameter values are passed, and that the `OUTPUT` parameter value is read back correctly.
+**Strategy:** NSubstitute mock of `VendSysDbContext` (specifically its `Database` property and `ExecuteSqlRawAsync` call). Verifies that the correct SP name and parameter values are passed, and that the `OUTPUT` parameter value is read back correctly.
 
-**Important:** `Database.ExecuteSqlRawAsync` is an extension method on `DatabaseFacade`. To make it mockable, `DexRepository` should accept a `VenDexDbContext` injected via DI; the test constructs the context with the InMemory provider to get a valid `DatabaseFacade` instance, then intercepts via a test-double DbContext subclass or wraps the call behind a thin interface.
+**Important:** `Database.ExecuteSqlRawAsync` is an extension method on `DatabaseFacade`. To make it mockable, `DexRepository` should accept a `VendSysDbContext` injected via DI; the test constructs the context with the InMemory provider to get a valid `DatabaseFacade` instance, then intercepts via a test-double DbContext subclass or wraps the call behind a thin interface.
 
 #### Test Cases
 
@@ -144,11 +144,11 @@ TestServer configured with:
 
 ---
 
-## 5. MAUI Tests — VenDex.Maui.Tests
+## 5. MAUI Tests — VendSys.Maui.Tests
 
 ### 5.1 MainViewModelTests
 
-**Location:** `tests/VenDex.Maui.Tests/ViewModels/MainViewModelTests.cs`  
+**Location:** `tests/VendSys.Maui.Tests/ViewModels/MainViewModelTests.cs`  
 **Class under test:** `MainViewModel`  
 **Dependencies mocked with NSubstitute:** `IApiService`, `IDexFileService`
 
@@ -206,7 +206,7 @@ IDexFileService stub:
 
 ### 5.2 ApiServiceTests
 
-**Location:** `tests/VenDex.Maui.Tests/Services/ApiServiceTests.cs`  
+**Location:** `tests/VendSys.Maui.Tests/Services/ApiServiceTests.cs`  
 **Class under test:** `ApiService`  
 **Strategy:** Inject a `MockHttpMessageHandler` (custom `DelegatingHandler`) into `HttpClient` via `IHttpClientFactory` stub. Captures the outgoing `HttpRequestMessage` and returns a configured `HttpResponseMessage`.
 
@@ -273,11 +273,11 @@ MockHttpMessageHandler captures:
 
 ```bash
 # Backend tests
-dotnet test tests/VenDex.Tests/VenDex.Tests.csproj
+dotnet test tests/VendSys.Tests/VendSys.Tests.csproj
 
 # MAUI tests
-dotnet test tests/VenDex.Maui.Tests/VenDex.Maui.Tests.csproj
+dotnet test tests/VendSys.Maui.Tests/VendSys.Maui.Tests.csproj
 
 # All tests
-dotnet test VenDexChallenge.sln
+dotnet test VendSysChallenge.sln
 ```

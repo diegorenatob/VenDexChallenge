@@ -5,14 +5,14 @@ namespace VendSys.Infrastructure.Data;
 
 /// <summary>Default <see cref="ISqlExecutor"/> that delegates to the underlying ADO.NET connection.</summary>
 /// <remarks>
-/// Uses the raw <see cref="SqlConnection"/> obtained from the EF Core <see cref="VenDexDbContext"/>
+/// Uses the raw <see cref="SqlConnection"/> obtained from the EF Core <see cref="VendSysDbContext"/>
 /// so that OUTPUT parameters are reliably propagated back to the caller after execution.
 /// </remarks>
 public sealed class EfSqlExecutor : ISqlExecutor
 {
-    private readonly VenDexDbContext _context;
+    private readonly VendSysDbContext _context;
 
-    public EfSqlExecutor(VenDexDbContext context) => _context = context;
+    public EfSqlExecutor(VendSysDbContext context) => _context = context;
 
     /// <inheritdoc/>
     public async Task ExecuteAsync(string sql, params SqlParameter[] parameters)
